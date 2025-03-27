@@ -1,0 +1,12 @@
+[workspace.package]
+name = "degov"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+resolver = "2"
+members = ["crates/degov-drd", "crates/degov-db", "crates/degov-cli"]
+
+[workspace.dependencies]
+tokio = { version = "1.44.1", features = ["full"] }
+serde = { version = "1.0.219", features = ["derive"] }

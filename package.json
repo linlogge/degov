@@ -1,0 +1,8 @@
+{
+  "name": "degov",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "packageManager": "yarn@4.7.0"
+}

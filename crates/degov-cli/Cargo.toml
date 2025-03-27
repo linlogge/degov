@@ -1,0 +1,9 @@
+[package]
+name = "degov-cli"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+clap = { version = "4.5.32", features = ["derive"] }
+clap-cargo = "0.15.2"
+tokio = { workspace = true }
