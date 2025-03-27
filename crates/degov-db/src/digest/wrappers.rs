@@ -1,5 +1,5 @@
 use super::Digest;
-
+use serde::{Deserialize, Serialize};
 /// The root hash of a [`MerkleSearchTree`], representative of the state of the
 /// tree.
 ///
@@ -30,7 +30,7 @@ impl RootHash {
 /// nodes & subtree rooted at the [`Page`].
 ///
 /// [`Page`]: crate::page::Page
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct PageDigest(Digest<16>);
 
 impl std::ops::Deref for PageDigest {
@@ -56,7 +56,7 @@ impl From<Digest<16>> for PageDigest {
 
 /// Type wrapper over a [`Digest`] of a tree value, for readability / clarity /
 /// compile-time safety.
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct ValueDigest<const N: usize>(Digest<N>);
 
 impl<const N: usize> std::ops::Deref for ValueDigest<N> {

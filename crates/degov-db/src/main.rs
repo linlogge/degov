@@ -1,73 +1,103 @@
-use std::marker::PhantomData;
-
-use digest::{Hasher, RootHash, SipHasher};
-use foundationdb::{Database, Transaction};
-
-mod digest;
+use std::sync::Arc;
+pub mod builder;
+pub mod diff;
+pub mod digest;
 mod node;
+mod node_iter;
 mod page;
+mod tree;
+pub mod visitor;
 
-use node::Node;
-use page::Page;
-use siphasher::sip::SipHasher24;
+pub use node::*;
+pub use page::*;
+pub use tree::*;
 
-const ROOT_KEY: &[u8] = b"root";
+use foundationdb::{Database, options::TransactionOption};
+use serde::{Deserialize, Serialize};
 
-pub(crate) type DefaultHasher = SipHasher;
+// Example key and value types
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+struct Key(String);
 
-struct Mst<K, V, H = DefaultHasher, const N: usize = 16> {
-    db: Database,
-    hasher: H,
-    tree_hasher: SipHasher24,
-    root: Page<N, K>,
-    root_hash: Option<RootHash>,
-    _value_type: PhantomData<V>,
-}
-
-impl<K, V, H, const N: usize> Mst<K, V, H, N> {
-    pub fn new(db: Database, hasher: H) -> Self {
-        Self {
-            db,
-            hasher,
-            tree_hasher: SipHasher24::new(),
-            root: Page::new(0, vec![]),
-            root_hash: None,
-            _value_type: PhantomData,
-        }
-    }
-
-    pub async fn insert(&mut self, key: K, value: V) -> Result<(), foundationdb::FdbBindingError> {
-        let mut trx = self.db.run(|tx, _| {
-            async move {
-                let mut root = tx.get(ROOT_KEY, false).await?;
-
-                Ok(())
-            }
-        });
-
-        Ok(())
+impl AsRef<[u8]> for Key {
+    fn as_ref(&self) -> &[u8] {
+        self.0.as_bytes()
     }
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+struct Value(String);
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let network = unsafe { foundationdb::boot() };
 
-    // Have fun with the FDB API
-    insert_and_get()
+    let db = Arc::new(Database::default().unwrap());
+
+    let tree = FdbMerkleSearchTree::<Key, Value>::new(
+        db.clone(),
+        "example_tree".to_string(),
+        digest::siphash::SipHasher::default(),
+    );
+
+    // Begin a transaction
+    let tx = db.create_trx()?;
+    tx.set_option(TransactionOption::RetryLimit(10))?;
+
+    // Insert some key-value pairs
+    tree.upsert(
+        &tx,
+        Key("apple".to_string()),
+        &Value("red fruit".to_string()),
+    )
+    .await?;
+    tree.upsert(
+        &tx,
+        Key("banana".to_string()),
+        &Value("yellow fruit".to_string()),
+    )
+    .await?;
+    tree.upsert(
+        &tx,
+        Key("cherry".to_string()),
+        &Value("small red fruit".to_string()),
+    )
+    .await?;
+
+    // Get the root hash to verify the tree state
+    let hash1 = tree.root_hash(&tx).await?;
+    println!("Root hash after first inserts: {:?}", hash1.as_ref());
+
+    // Commit the transaction
+    tx.commit()
         .await
-        .expect("could not run the insert and get");
+        .map_err(|e| Box::new(e))
+        .map_err(|e| e.to_string())?;
+
+    // Start a new transaction
+    let tx = db.create_trx()?;
+
+    // Update a value
+    tree.upsert(
+        &tx,
+        Key("banana".to_string()),
+        &Value("yellow curved fruit".to_string()),
+    )
+    .await?;
+
+    // Get the updated root hash
+    let hash2 = tree.root_hash(&tx).await?;
+    println!("Root hash after update: {:?}", hash2.as_ref());
+
+    // The root hash should be different after the update
+    assert_ne!(hash1.as_ref(), hash2.as_ref());
+
+    // Commit the transaction
+    tx.commit().await.map_err(|e| Box::new(e))
+        .map_err(|e| e.to_string())?;
 
     // shutdown the client
     drop(network);
-}
-
-async fn insert_and_get() -> foundationdb::FdbResult<()> {
-    let db = foundationdb::Database::default()?;
-
-    let mut mst: Mst<&str, &str, SipHasher, 16> = Mst::new(db, SipHasher::default());
-
-    mst.insert("hello", "world").await.unwrap();
 
     Ok(())
 }

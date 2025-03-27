@@ -1,4 +1,4 @@
-use crate::{digest::ValueDigest, page::Page};
+use crate::{digest::ValueDigest, page::Page, visitor::Visitor};
 
 /// Storage of a single key/value pair.
 ///
@@ -14,7 +14,7 @@ pub struct Node<const N: usize, K> {
     lt_pointer: Option<Box<Page<N, K>>>,
 }
 
-impl<const N: usize, K: AsRef<[u8]>> Node<N, K> {
+impl<const N: usize, K> Node<N, K> {
     pub(crate) const fn new(
         key: K,
         value: ValueDigest<N>,
@@ -25,6 +25,31 @@ impl<const N: usize, K: AsRef<[u8]>> Node<N, K> {
             value_hash: value,
             lt_pointer,
         }
+    }
+
+    pub(crate) fn depth_first<'a, T>(&'a self, visitor: &mut T) -> bool
+    where
+        T: Visitor<'a, N, K>,
+    {
+        if !visitor.pre_visit_node(self) {
+            return false;
+        }
+
+        if let Some(p) = &self.lt_pointer {
+            if !p.in_order_traversal(visitor, false) {
+                return false;
+            }
+        }
+
+        if !visitor.visit_node(self) {
+            return false;
+        }
+
+        if !visitor.post_visit_node(self) {
+            return false;
+        }
+
+        true
     }
 
     /// Return the key of this node.

@@ -1,5 +1,7 @@
 use std::num::NonZeroU8;
 
+use serde::{Deserialize, Serialize};
+
 /// A hash function outputting a fixed-length digest of `N` bytes.
 ///
 /// The hash function must produce strong digests with a low probability of
@@ -52,4 +54,57 @@ impl<const N: usize> Digest<N> {
     pub const fn as_bytes(&self) -> &[u8; N] {
         &self.0
     }
+}
+
+impl<const N: usize> Serialize for Digest<N> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer {
+        serializer.serialize_bytes(&self.0)
+    }
+}
+
+impl<'de, const N: usize> Deserialize<'de> for Digest<N> {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de> {
+        let bytes: Vec<u8> = Deserialize::deserialize(deserializer)?;
+        let bytes: [u8; N] = bytes.try_into().map_err(|_| serde::de::Error::custom("invalid length"))?;
+        Ok(Self(bytes))
+    }
+}
+
+impl<const N: usize> AsRef<[u8]> for Digest<N> {
+    fn as_ref(&self) -> &[u8] {
+        &self.0
+    }
+}
+
+// TODO(dom:doc): update this
+
+/// Extract the number of leading 0's when expressed as base 16 digits, defining
+/// the tree level the hash should reside at.
+pub(crate) fn level<const N: usize>(v: &Digest<N>, base: NonZeroU8) -> u8 {
+    let mut out = 0;
+    for v in v.0.into_iter().map(|v| base_count_zero(v, base)) {
+        match v {
+            2 => out += 2,
+            1 => return out + 1,
+            0 => return out,
+            _ => unreachable!(),
+        }
+    }
+    out
+}
+
+const fn base_count_zero(v: u8, base: NonZeroU8) -> u8 {
+    if v == 0 {
+        return 2;
+    }
+
+    if v % base.get() == 0 {
+        return 1;
+    }
+
+    0
 }
