@@ -34,7 +34,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let db = Arc::new(Database::default().unwrap());
 
-    let tree = FdbMerkleSearchTree::<Key, Value>::new(
+    /* let tree = FdbMerkleSearchTree::<Key, Value>::new(
         db.clone(),
         "example_tree".to_string(),
         digest::siphash::SipHasher::default(),
@@ -95,7 +95,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Commit the transaction
     tx.commit().await.map_err(|e| Box::new(e))
         .map_err(|e| e.to_string())?;
-
+ */
     // shutdown the client
     drop(network);
 

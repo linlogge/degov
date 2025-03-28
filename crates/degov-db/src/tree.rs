@@ -4,11 +4,11 @@ use siphasher::sip128::SipHasher24;
 
 use crate::{
     diff::PageRange,
-    digest::{self, siphash::SipHasher, Hasher, RootHash, ValueDigest},
+    digest::{self, Hasher, RootHash, ValueDigest, siphash::SipHasher},
     node::Node,
     node_iter::NodeIter,
-    page::{insert_intermediate_page, Page, UpsertResult},
-    visitor::{page_range_hash::PageRangeHashVisitor, Visitor},
+    page::{Page, UpsertResult, insert_intermediate_page},
+    visitor::{Visitor, page_range_hash::PageRangeHashVisitor},
 };
 
 /// An alias for the default hash implementation.
