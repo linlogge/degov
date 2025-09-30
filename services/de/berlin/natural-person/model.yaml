@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: DataModel
+metadata:
+  id: de.berlin/natural-person
+  title: Berlin Natural Person
+  description: Natural person model for Berlin residents, extending the base German model with Berlin-specific fields and requirements
+  version: 1.0.0
+  authority:
+    name: Land Berlin
+    did: did:degov:de.berlin
+    jurisdiction: DE-BE
+
+spec:
+  # Inherit from the base degov natural person model
+  inherits:
+    - de.degov/natural-person
+  
+  # Berlin-specific storage extensions
+  storage:
+    encrypted: true
+    merkleProof: true
+    retention:
+      duration: P100Y
+      afterDeletion: anonymize
+    # Berlin-specific: Store in Berlin data centers only
+    dataResidency:
+      regions: [DE-BE]
+      crossBorderAllowed: false
+  schema:
+    type: object
+    properties:
+      berlinId:
+        type: string
+        format: uuid
+        generated: true
+        immutable: true
+        indexed: true
+        description: Berlin ID
+      

@@ -1,0 +1,27 @@
+apiVersion: degov.gov/v1
+kind: DataModel
+metadata:
+  id: de.test/example
+  title: Example Model
+  description: A test model for validation
+  version: 1.0.0
+spec:
+  storage:
+    encrypted: true
+    merkleProof: true
+  schema:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        generated: true
+        immutable: true
+        indexed: true
+      name:
+        type: string
+        required: true
+        minLength: 1
+        maxLength: 100
+
+

@@ -1,0 +1,10 @@
+[package]
+name = "degov-server"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+degov-storage = { path = "../degov-storage" }
+degov-core = { path = "../degov-core" }
+tokio = { workspace = true }
+hex = "0.4"

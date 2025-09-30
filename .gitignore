@@ -1,7 +1,31 @@
-# Rust
-/target
+target/
 
-# Yarn
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+.env
+
+fdb-config
+fdb-data
+
+# testing
+coverage
+
+# svelte
+.svelte-kit
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# yarn
 .yarn/*
 !.yarn/cache
 !.yarn/patches
@@ -9,3 +33,12 @@
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# turbo
+.turbo

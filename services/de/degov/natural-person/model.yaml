@@ -1,0 +1,622 @@
+apiVersion: v1
+kind: DataModel
+metadata:
+  id: de.degov/natural-person
+  title: Natural Person
+  description: Base model for representing a natural person according to German standards (BSI, DSGVO/GDPR compliant)
+  version: 1.0.0
+
+spec:
+  # Storage configuration - sensitive personal data
+  storage:
+    encrypted: true
+    merkleProof: true
+    retention:
+      duration: P100Y
+      afterDeletion: anonymize
+
+  schema:
+    type: object
+    properties:
+      # Core Identification
+      id:
+        type: string
+        format: uuid
+        generated: true
+        immutable: true
+        indexed: true
+        description: Unique person identifier
+      
+      did:
+        type: string
+        format: did
+        immutable: true
+        indexed: true
+        description: Decentralized Identifier (DID) for person
+      
+      # Name Information (according to German naming standards)
+      givenName:
+        type: string
+        required: true
+        minLength: 1
+        maxLength: 100
+        pii: true
+        description: Given name(s) / Vorname(n)
+      
+      familyName:
+        type: string
+        required: true
+        minLength: 1
+        maxLength: 100
+        pii: true
+        indexed: true
+        description: Family name / Nachname
+      
+      birthName:
+        type: string
+        maxLength: 100
+        pii: true
+        description: Birth name if different from current family name / Geburtsname
+      
+      namePrefix:
+        type: string
+        maxLength: 50
+        description: Nobility or academic title prefix (e.g., Dr., Prof., von)
+      
+      nameSuffix:
+        type: string
+        maxLength: 50
+        description: Name suffix (e.g., Jr., III)
+      
+      # Birth Information
+      birthDate:
+        type: date
+        required: true
+        pii: true
+        encrypted: true
+        description: Date of birth / Geburtsdatum
+        validations:
+          - type: dateRange
+            min: "1900-01-01"
+            max: "today"
+      
+      birthPlace:
+        type: object
+        required: true
+        pii: true
+        encrypted: true
+        properties:
+          city:
+            type: string
+            description: City of birth / Geburtsort
+          state:
+            type: string
+            description: State/Province of birth (if applicable)
+          country:
+            type: string
+            pattern: "^[A-Z]{2}$"
+            description: Country of birth (ISO 3166-1 alpha-2) / Geburtsland
+        description: Place of birth / Geburtsort
+      
+      # Citizenship and Nationality
+      nationality:
+        type: array
+        required: true
+        items:
+          type: string
+          pattern: "^[A-Z]{2}$"
+        minItems: 1
+        description: Nationality/nationalities (ISO 3166-1 alpha-2) / Staatsangehörigkeit
+      
+      citizenship:
+        type: enum
+        values:
+          - german
+          - eu-citizen
+          - dual-citizen
+          - foreign
+        required: true
+        description: Citizenship status / Staatsbürgerschaftsstatus
+      
+      # German-specific Identifiers
+      citizenId:
+        type: string
+        pattern: "^[0-9]{11}$"
+        immutable: true
+        indexed: true
+        pii: true
+        encrypted: true
+        description: German citizen identification number (11 digits) / Personalausweisnummer
+      
+      taxId:
+        type: string
+        pattern: "^[0-9]{11}$"
+        immutable: true
+        indexed: true
+        pii: true
+        encrypted: true
+        description: Tax identification number / Steueridentifikationsnummer (Steuer-ID)
+      
+      socialSecurityNumber:
+        type: string
+        pattern: "^[0-9]{2}[0-3][0-9]{2}[0-9]{2}[A-Z][0-9]{3}$"
+        immutable: true
+        pii: true
+        encrypted: true
+        description: Social security number / Sozialversicherungsnummer (12 characters)
+      
+      # Gender (according to German law - includes diverse option)
+      gender:
+        type: enum
+        values:
+          - male        # männlich
+          - female      # weiblich
+          - diverse     # divers
+          - not-specified  # keine Angabe
+        pii: true
+        description: Legal gender / Geschlecht (gemäß deutschem Recht)
+      
+      # Contact Information
+      email:
+        type: string
+        format: email
+        indexed: true
+        pii: true
+        encrypted: true
+        description: Primary email address / E-Mail-Adresse
+      
+      emailVerified:
+        type: boolean
+        default: false
+        description: Whether email has been verified
+      
+      phone:
+        type: string
+        pattern: "^\\+[1-9]\\d{1,14}$"
+        pii: true
+        encrypted: true
+        description: Primary phone number in E.164 format / Telefonnummer
+      
+      phoneVerified:
+        type: boolean
+        default: false
+        description: Whether phone has been verified
+      
+      mobilePhone:
+        type: string
+        pattern: "^\\+[1-9]\\d{1,14}$"
+        pii: true
+        encrypted: true
+        description: Mobile phone number in E.164 format / Mobiltelefonnummer
+      
+      # Address Information (current residence)
+      residenceAddress:
+        type: object
+        required: true
+        pii: true
+        encrypted: true
+        properties:
+          street:
+            type: string
+            required: true
+            description: Street name and number / Straße und Hausnummer
+          
+          additionalInfo:
+            type: string
+            description: Additional address information (e.g., apartment) / Adresszusatz
+          
+          postalCode:
+            type: string
+            required: true
+            pattern: "^[0-9]{5}$"
+            description: German postal code (5 digits) / Postleitzahl
+          
+          city:
+            type: string
+            required: true
+            description: City / Stadt
+          
+          state:
+            type: enum
+            required: true
+            values:
+              - Baden-Württemberg
+              - Bayern
+              - Berlin
+              - Brandenburg
+              - Bremen
+              - Hamburg
+              - Hessen
+              - Mecklenburg-Vorpommern
+              - Niedersachsen
+              - Nordrhein-Westfalen
+              - Rheinland-Pfalz
+              - Saarland
+              - Sachsen
+              - Sachsen-Anhalt
+              - Schleswig-Holstein
+              - Thüringen
+            description: Federal state / Bundesland
+          
+          country:
+            type: string
+            default: DE
+            pattern: "^[A-Z]{2}$"
+            description: Country code (ISO 3166-1 alpha-2) / Ländercode
+          
+          registeredSince:
+            type: date
+            description: Date registered at this address / Anmeldedatum
+        description: Current residence address / Wohnanschrift
+      
+      mailingAddress:
+        type: object
+        pii: true
+        encrypted: true
+        properties:
+          street:
+            type: string
+            required: true
+          additionalInfo:
+            type: string
+          postalCode:
+            type: string
+            required: true
+            pattern: "^[0-9]{5}$"
+          city:
+            type: string
+            required: true
+          country:
+            type: string
+            pattern: "^[A-Z]{2}$"
+        description: Mailing address if different from residence / Postanschrift
+      
+      # Marital Status
+      maritalStatus:
+        type: enum
+        values:
+          - single              # ledig
+          - married             # verheiratet
+          - registered-partnership  # eingetragene Lebenspartnerschaft
+          - divorced            # geschieden
+          - widowed             # verwitwet
+          - separated           # getrennt lebend
+        pii: true
+        description: Marital status / Familienstand
+      
+      # Family Relations (references to other natural persons)
+      spouse:
+        type: string
+        format: uuid
+        pii: true
+        description: Reference to spouse's person record / Ehepartner
+      
+      children:
+        type: array
+        items:
+          type: string
+          format: uuid
+        pii: true
+        description: References to children's person records / Kinder
+      
+      # Document References
+      identityCard:
+        type: string
+        format: uuid
+        indexed: true
+        description: Reference to current identity card / Personalausweis
+      
+      passport:
+        type: string
+        format: uuid
+        indexed: true
+        description: Reference to current passport / Reisepass
+      
+      # Language and Communication Preferences
+      primaryLanguage:
+        type: string
+        default: de
+        pattern: "^[a-z]{2}$"
+        description: Primary language (ISO 639-1) / Hauptsprache
+      
+      additionalLanguages:
+        type: array
+        items:
+          type: string
+          pattern: "^[a-z]{2}$"
+        description: Additional languages spoken / Weitere Sprachen
+      
+      communicationPreferences:
+        type: object
+        properties:
+          preferredChannel:
+            type: enum
+            values: [email, phone, mail, app]
+            default: email
+          allowMarketing:
+            type: boolean
+            default: false
+          preferredLanguage:
+            type: string
+            pattern: "^[a-z]{2}$"
+            default: de
+        description: Communication preferences / Kommunikationspräferenzen
+      
+      # Accessibility Needs
+      accessibilityNeeds:
+        type: object
+        properties:
+          requiresAssistance:
+            type: boolean
+            default: false
+          assistanceType:
+            type: array
+            items:
+              type: enum
+              values: [visual, hearing, mobility, cognitive, other]
+          preferredFormat:
+            type: enum
+            values: [standard, large-print, braille, audio, easy-language]
+        description: Accessibility requirements / Barrierefreiheit
+      
+      # Legal and Consent Information
+      legalCapacity:
+        type: enum
+        values:
+          - full              # voll geschäftsfähig
+          - limited           # beschränkt geschäftsfähig
+          - incapacitated     # geschäftsunfähig
+        default: full
+        pii: true
+        description: Legal capacity / Geschäftsfähigkeit
+      
+      legalGuardian:
+        type: string
+        format: uuid
+        pii: true
+        description: Reference to legal guardian if applicable / Gesetzlicher Vertreter
+      
+      consentRecords:
+        type: array
+        items:
+          type: object
+          properties:
+            authority:
+              type: string
+              format: did
+              description: Authority that received consent
+            purpose:
+              type: string
+              description: Purpose of data processing
+            legalBasis:
+              type: string
+              description: GDPR legal basis (Art. 6, Art. 9)
+            grantedAt:
+              type: timestamp
+              description: When consent was granted
+            expiresAt:
+              type: timestamp
+              nullable: true
+              description: When consent expires
+            revokedAt:
+              type: timestamp
+              nullable: true
+              description: When consent was revoked
+            scope:
+              type: array
+              items:
+                type: string
+              description: Data fields covered by consent
+        description: GDPR consent audit trail / Einwilligungen (DSGVO)
+      
+      # Account and System Information
+      accountStatus:
+        type: enum
+        values:
+          - active
+          - inactive
+          - suspended
+          - deceased
+          - merged
+        default: active
+        indexed: true
+        description: Account status / Kontostatus
+      
+      verificationLevel:
+        type: enum
+        values:
+          - unverified        # nicht verifiziert
+          - email-verified    # E-Mail verifiziert
+          - phone-verified    # Telefon verifiziert
+          - id-verified       # Ausweisverifizierung
+          - in-person-verified  # persönlich verifiziert
+        default: unverified
+        indexed: true
+        description: Verification level / Verifizierungsstufe
+      
+      verifiedAt:
+        type: timestamp
+        description: When identity was last verified
+      
+      verifiedBy:
+        type: string
+        format: did
+        description: Authority that verified identity
+      
+      # Privacy and Security
+      privacySettings:
+        type: object
+        properties:
+          profileVisibility:
+            type: enum
+            values: [public, private, authorities-only]
+            default: authorities-only
+          dataMinimization:
+            type: boolean
+            default: true
+          autoDeleteInactive:
+            type: boolean
+            default: false
+        description: Privacy settings / Datenschutzeinstellungen
+      
+      securitySettings:
+        type: object
+        properties:
+          twoFactorEnabled:
+            type: boolean
+            default: false
+          biometricEnabled:
+            type: boolean
+            default: false
+          lastPasswordChange:
+            type: timestamp
+        description: Security settings / Sicherheitseinstellungen
+      
+      # Audit Fields
+      createdAt:
+        type: timestamp
+        generated: true
+        immutable: true
+        indexed: true
+        description: Record creation timestamp
+      
+      updatedAt:
+        type: timestamp
+        generated: true
+        indexed: true
+        description: Last update timestamp
+      
+      createdBy:
+        type: string
+        format: did
+        generated: true
+        immutable: true
+        description: DID of authority/system that created this record
+      
+      updatedBy:
+        type: string
+        format: did
+        description: DID of authority/system that last updated this record
+      
+      dataSource:
+        type: enum
+        values:
+          - self-registration
+          - authority-registration
+          - migration
+          - federated-import
+        immutable: true
+        description: How this record was created
+      
+      # Notes and Comments (for authorized personnel)
+      internalNotes:
+        type: array
+        items:
+          type: object
+          properties:
+            note:
+              type: string
+            createdAt:
+              type: timestamp
+            createdBy:
+              type: string
+              format: did
+        description: Internal notes (restricted access) / Interne Notizen
+
+  # Indexes for efficient querying
+  indexes:
+    - name: by-did
+      fields: [did]
+      unique: true
+    
+    - name: by-citizen-id
+      fields: [citizenId]
+      unique: true
+    
+    - name: by-tax-id
+      fields: [taxId]
+      unique: true
+    
+    - name: by-family-name
+      fields: [familyName, givenName]
+    
+    - name: by-birth-date
+      fields: [birthDate]
+    
+    - name: by-email
+      fields: [email]
+    
+    - name: by-status
+      fields: [accountStatus, verificationLevel]
+
+  # Computed/derived fields
+  computed:
+    fullName:
+      type: string
+      description: Full name with prefix and suffix / Vollständiger Name
+      script: |
+        let name = '';
+        if (record.namePrefix) name += record.namePrefix + ' ';
+        name += record.givenName + ' ' + record.familyName;
+        if (record.nameSuffix) name += ' ' + record.nameSuffix;
+        return name.trim();
+    
+    age:
+      type: integer
+      description: Current age in years / Alter in Jahren
+      script: |
+        const now = new Date();
+        const birth = new Date(record.birthDate);
+        let age = now.getFullYear() - birth.getFullYear();
+        const monthDiff = now.getMonth() - birth.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate())) {
+          age--;
+        }
+        return age;
+    
+    isAdult:
+      type: boolean
+      description: Whether person is 18 years or older / Volljährig
+      script: |
+        const now = new Date();
+        const birth = new Date(record.birthDate);
+        let age = now.getFullYear() - birth.getFullYear();
+        const monthDiff = now.getMonth() - birth.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate())) {
+          age--;
+        }
+        return age >= 18;
+    
+    isGermanCitizen:
+      type: boolean
+      description: Whether person has German citizenship
+      script: |
+        return record.nationality && record.nationality.includes('DE');
+    
+    fullAddress:
+      type: string
+      description: Formatted full address / Formatierte Adresse
+      script: |
+        const addr = record.residenceAddress;
+        if (!addr) return '';
+        let result = addr.street;
+        if (addr.additionalInfo) result += ', ' + addr.additionalInfo;
+        result += ', ' + addr.postalCode + ' ' + addr.city;
+        if (addr.state) result += ', ' + addr.state;
+        if (addr.country && addr.country !== 'DE') result += ', ' + addr.country;
+        return result;
+    
+    hasActiveConsent:
+      type: boolean
+      description: Whether person has any active consents
+      script: |
+        if (!record.consentRecords || record.consentRecords.length === 0) {
+          return false;
+        }
+        const now = new Date();
+        return record.consentRecords.some(consent => {
+          if (consent.revokedAt) return false;
+          if (consent.expiresAt && new Date(consent.expiresAt) < now) return false;
+          return true;
+        });
+

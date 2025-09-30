@@ -1,0 +1,11 @@
+apiVersion: degov.gov/v1
+kind: DataModel
+metadata:
+  id: invalid-nsid-format
+  title: Invalid Model
+  version: 1.0.0
+spec:
+  schema:
+    type: object
+
+

@@ -1,0 +1,8 @@
+[package]
+name = "degov-network"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+libp2p = "0.56.0"
+tokio = { workspace = true }
