@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: degov.gov/v1
 kind: DataModel
 metadata:
   id: de.degov/natural-person
@@ -9,8 +9,8 @@ metadata:
 spec:
   # Storage configuration - sensitive personal data
   storage:
-    encrypted: true
-    merkleProof: true
+    encrypted: false
+    merkleProof: false
     retention:
       duration: P100Y
       afterDeletion: anonymize

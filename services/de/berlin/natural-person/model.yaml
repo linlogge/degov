@@ -17,7 +17,7 @@ spec:
   
   # Berlin-specific storage extensions
   storage:
-    encrypted: true
+    encrypted: false
     merkleProof: true
     retention:
       duration: P100Y

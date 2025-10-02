@@ -1,44 +1,68 @@
-target/
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
 
-# dependencies
-node_modules
-.pnp
-.pnp.js
+node_modules/
 
-.env
-
-fdb-config
-fdb-data
-
-# testing
-coverage
-
-# svelte
-.svelte-kit
-
-# misc
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
 .DS_Store
-*.pem
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Build artifacts
+*.log
+*.out
+*.tmp
 
-# yarn
-.yarn/*
-!.yarn/cache
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+# Node / VSCode Extension
+vscode-extension/node_modules/
+vscode-extension/out/
+vscode-extension/*.vsix
+*.vsix
 
-# local env files
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+.env
+venv/
+ENV/
 
-# turbo
-.turbo
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# FoundationDB
+fdb-data/
+*.fdq
+fdb.cluster
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+*.test
+test-*.yaml
+!test-model.yaml
+
+# Documentation build
+docs/_build/
+site/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Claude settings (keep local)
+.claude/settings.local.json

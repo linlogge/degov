@@ -1,0 +1,7 @@
+// This file intentionally has an error for testing
+definition {
+    // Missing the 'type' child node
+    // Uncomment the line below to fix:
+    // type "DataModel"
+}
+

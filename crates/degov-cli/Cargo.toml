@@ -11,3 +11,4 @@ degov-core = { path = "../degov-core" }
 clap-cargo = "0.15.2"
 tokio = { workspace = true }
 colored = "2.1"
+miette = { version = "7.6.0", features = ["fancy"] }

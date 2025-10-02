@@ -18,7 +18,7 @@ members = [
     "crates/degov-governance",
     "crates/degov-cli",
     "crates/degov-server",
-    "crates/degov-dsl",
+    "crates/degov-dsl", "crates/degov-lsp",
 ]
 
 [workspace.dependencies]

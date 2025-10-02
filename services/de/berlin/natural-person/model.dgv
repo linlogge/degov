@@ -1,0 +1,9 @@
+definition {
+    type "ObjectModel"
+    schema {
+        id {
+            type "string"
+            required #true
+        }
+    }
+}

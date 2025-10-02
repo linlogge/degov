@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use clap::{Parser, Subcommand, builder::styling};
 use clap_cargo::style;
 use degov_server::Server;
+use miette::{IntoDiagnostic, bail};
 
 mod validate;
 
@@ -63,50 +64,6 @@ enum ValidateCommands {
         #[arg(long)]
         json: bool,
     },
-    /// Validate all definitions in a directory
-    Dir {
-        /// Path to the directory
-        path: PathBuf,
-        
-        /// Show verbose output including warnings
-        #[arg(short, long)]
-        verbose: bool,
-        
-        /// Output in JSON format
-        #[arg(long)]
-        json: bool,
-    },
-    /// Validate by NSID
-    Nsid {
-        /// NSID to validate (e.g., de.berlin/business-registration)
-        nsid: String,
-        
-        /// Root directory for services (defaults to ./services)
-        #[arg(short, long, default_value = "services")]
-        root: PathBuf,
-        
-        /// Show verbose output including warnings
-        #[arg(short, long)]
-        verbose: bool,
-        
-        /// Output in JSON format
-        #[arg(long)]
-        json: bool,
-    },
-    /// Validate all services in the services directory
-    All {
-        /// Root directory for services (defaults to ./services)
-        #[arg(short, long, default_value = "services")]
-        root: PathBuf,
-        
-        /// Show verbose output including warnings
-        #[arg(short, long)]
-        verbose: bool,
-        
-        /// Output in JSON format
-        #[arg(long)]
-        json: bool,
-    },
 }
 
 #[derive(Subcommand)]
@@ -138,17 +95,17 @@ enum ServerCommands {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> miette::Result<()> {
     let cli = Cli::parse();
 
     match &cli.command {
         Commands::Validate { command } => {
-            handle_validate_command(command);
+            handle_validate_command(command)?;
         }
         Commands::Drd { command } => match command {
             DrdCommands::Check => println!("Checking DRD..."),
             DrdCommands::Cat { path } => {
-                let contents = std::fs::read_to_string(path).unwrap();
+                let contents = std::fs::read_to_string(path).into_diagnostic()?;
                 println!("{}", contents);
             }
         },
@@ -160,89 +117,28 @@ async fn main() {
             ServerCommands::Start { did } => {
                 println!("Starting server with DID: {}", did);
                 let server = Server::new(did);
-                let result = server.start().await;
-                if let Err(e) = result {
-                    println!("Error: {}", e);
+                if let Err(e) = server.start().await {
+                    bail!("Server error: {}", e);
                 }
             }
         },
     }
+
+    Ok(())
 }
 
-fn handle_validate_command(command: &ValidateCommands) {
+fn handle_validate_command(command: &ValidateCommands) -> miette::Result<()> {
     match command {
-        ValidateCommands::File { path, verbose, json } => {
+        ValidateCommands::File { path, verbose: _, json: _ } => {
             if !path.exists() {
-                eprintln!("Error: File not found: {}", path.display());
-                std::process::exit(1);
+                bail!("File not found: {}", path.display());
             }
             
-            let result = validate::validate_file(path);
-            let results = vec![result];
+            validate::validate_file(path.clone())?;
             
-            if *json {
-                validate::print_results_json(&results);
-            } else {
-                validate::print_results(&results, *verbose);
-            }
-            
-            if results.iter().any(|r| !r.success) {
-                std::process::exit(1);
-            }
-        }
-        ValidateCommands::Dir { path, verbose, json } => {
-            if !path.exists() {
-                eprintln!("Error: Directory not found: {}", path.display());
-                std::process::exit(1);
-            }
-            
-            let results = validate::validate_directory(path);
-            
-            if *json {
-                validate::print_results_json(&results);
-            } else {
-                validate::print_results(&results, *verbose);
-            }
-            
-            if results.iter().any(|r| !r.success) {
-                std::process::exit(1);
-            }
-        }
-        ValidateCommands::Nsid { nsid, root, verbose, json } => {
-            if !root.exists() {
-                eprintln!("Error: Root directory not found: {}", root.display());
-                std::process::exit(1);
-            }
-            
-            let results = validate::validate_by_nsid(nsid, root);
-            
-            if *json {
-                validate::print_results_json(&results);
-            } else {
-                validate::print_results(&results, *verbose);
-            }
-            
-            if results.iter().any(|r| !r.success) {
-                std::process::exit(1);
-            }
-        }
-        ValidateCommands::All { root, verbose, json } => {
-            if !root.exists() {
-                eprintln!("Error: Root directory not found: {}", root.display());
-                std::process::exit(1);
-            }
-            
-            let results = validate::validate_all(root);
-            
-            if *json {
-                validate::print_results_json(&results);
-            } else {
-                validate::print_results(&results, *verbose);
-            }
-            
-            if results.iter().any(|r| !r.success) {
-                std::process::exit(1);
-            }
+            println!("✓ Validation successful");
+
+            Ok(())
         }
     }
 }
