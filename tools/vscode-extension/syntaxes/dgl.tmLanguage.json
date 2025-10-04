@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
     "comment": "Some of these patterns are taken straight from rust-analyzer: https://github.com/rust-lang/vscode-rust/blob/master/rust-analyzer/editors/code/rust.tmGrammar.json. Some was also taken from https://github.com/arm32x/vscode-sdlang/blob/master/syntaxes/sdlang.tmLanguage.json",
-    "name": "dgv",
+    "name": "dgl",
     "patterns": [
         {
             "include": "#forbidden_ident"
@@ -223,5 +223,5 @@
             "end": "\\}"
         }
     },
-    "scopeName": "source.dgv"
+    "scopeName": "source.dgl"
 }

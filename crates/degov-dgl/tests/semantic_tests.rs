@@ -1,7 +1,7 @@
 //! Tests for semantic analysis and IDE features
 
-use degov_dsl::prelude::*;
-use degov_dsl::semantic::{CompletionEngine, SemanticInfo};
+use degov_dgl::prelude::*;
+use degov_dgl::semantic::{CompletionEngine, SemanticInfo};
 
 #[test]
 fn test_semantic_info_basic() {
@@ -27,7 +27,7 @@ id "my-id"
 version "1.0.0"
     "#;
     
-    let parser = Parser::new(source.to_string(), "test.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "test.dgl".to_string())
         .with_schema(schema.clone());
     
     let result = parser.parse();
@@ -60,7 +60,7 @@ fn test_hover_info_at_position() {
     
     let source = r#"name "test-value""#;
     
-    let parser = Parser::new(source.to_string(), "test.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "test.dgl".to_string())
         .with_schema(schema.clone());
     
     let result = parser.parse();
@@ -163,7 +163,7 @@ root root_prop="value" {
 }
     "#;
     
-    let parser = Parser::new(source.to_string(), "test.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "test.dgl".to_string())
         .with_schema(schema.clone());
     
     let result = parser.parse();

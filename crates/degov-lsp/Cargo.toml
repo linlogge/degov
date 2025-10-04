@@ -8,7 +8,7 @@ name = "degov-lsp"
 path = "src/main.rs"
 
 [dependencies]
-degov-dsl = { path = "../degov-dsl" }
+degov-dgl = { path = "../degov-dgl" }
 tower-lsp = "0.20"
 tokio = { version = "1.0", features = ["full"] }
 tracing = "0.1"

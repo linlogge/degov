@@ -6,7 +6,7 @@ edition.workspace = true
 [dependencies]
 clap = { version = "4.5.32", features = ["derive"] }
 degov-server = { path = "../degov-server" }
-degov-dsl = { path = "../degov-dsl" }
+degov-dgl = { path = "../degov-dgl" }
 degov-core = { path = "../degov-core" }
 clap-cargo = "0.15.2"
 tokio = { workspace = true }

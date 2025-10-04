@@ -2,7 +2,7 @@
 //!
 //! Provides the main parsing interface using the schema framework
 
-use crate::error::{DslDiagnostic, DslError, DiagnosticKind};
+use crate::error::{DglDiagnostic, DglError, DiagnosticKind};
 use crate::schema::{Schema, NodeDef, ValueType};
 use crate::semantic::SemanticInfo;
 use miette::NamedSource;
@@ -32,7 +32,7 @@ impl Parser {
     }
 
     /// Parse the document
-    pub fn parse(&self) -> Result<ParsedDocument, DslError> {
+    pub fn parse(&self) -> Result<ParsedDocument, DglError> {
         // Parse KDL
         let doc = match self.source.parse::<kdl::KdlDocument>() {
             Ok(doc) => doc,
@@ -58,7 +58,7 @@ impl Parser {
             .iter()
             .any(|d| d.severity == miette::Severity::Error)
         {
-            return Err(DslError {
+            return Err(DglError {
                 source: named_source,
                 diagnostics,
             });
@@ -84,7 +84,7 @@ impl Parser {
         doc: &kdl::KdlDocument,
         schema: &Schema,
         source: &Arc<NamedSource<String>>,
-    ) -> Vec<DslDiagnostic> {
+    ) -> Vec<DglDiagnostic> {
         let mut diagnostics = Vec::new();
         let mut validated_properties = std::collections::HashSet::new();
 
@@ -137,7 +137,7 @@ impl Parser {
                     ));
                 } else if !schema.root.allow_unknown_children {
                     // Unknown node in strict mode
-                    diagnostics.push(DslDiagnostic::error(
+                    diagnostics.push(DglDiagnostic::error(
                         source.clone(),
                         DiagnosticKind::UnknownNode {
                             node_name: node_name.to_string(),
@@ -151,7 +151,7 @@ impl Parser {
             // Check for missing required properties
             for (prop_name, prop_def) in &schema.root.properties {
                 if prop_def.required && !validated_properties.contains(prop_name) {
-                    diagnostics.push(DslDiagnostic::error(
+                    diagnostics.push(DglDiagnostic::error(
                         source.clone(),
                         DiagnosticKind::MissingProperty {
                             property: prop_name.clone(),
@@ -181,7 +181,7 @@ impl Parser {
         node: &kdl::KdlNode,
         schema: &Schema,
         source: &Arc<NamedSource<String>>,
-    ) -> Vec<DslDiagnostic> {
+    ) -> Vec<DglDiagnostic> {
         // This is a wrapper for backward compatibility
         self.validate_node_against_def(node, &schema.root, schema, source)
     }
@@ -193,7 +193,7 @@ impl Parser {
         node_def: &NodeDef,
         schema: &Schema,
         source: &Arc<NamedSource<String>>,
-    ) -> Vec<DslDiagnostic> {
+    ) -> Vec<DglDiagnostic> {
         let mut diagnostics = Vec::new();
 
         // Apply schema modifier if present to get the actual schema for this node
@@ -241,7 +241,7 @@ impl Parser {
         node: &kdl::KdlNode,
         node_def: &NodeDef,
         source: &Arc<NamedSource<String>>,
-    ) -> Vec<DslDiagnostic> {
+    ) -> Vec<DglDiagnostic> {
         let mut diagnostics = Vec::new();
 
         // Get actual arguments (entries without names)
@@ -256,7 +256,7 @@ impl Parser {
             if arg_def.required {
                 if idx >= actual_args.len() {
                     // Missing required argument - use node span
-                    diagnostics.push(DslDiagnostic::error(
+                    diagnostics.push(DglDiagnostic::error(
                         source.clone(),
                         DiagnosticKind::MissingProperty {
                             property: arg_def.name.clone(),
@@ -268,7 +268,7 @@ impl Parser {
                     let entry = actual_args[idx];
                     let actual_value = entry.value();
                     if !arg_def.ty.matches(actual_value) {
-                        diagnostics.push(DslDiagnostic::error(
+                        diagnostics.push(DglDiagnostic::error(
                             source.clone(),
                             DiagnosticKind::TypeMismatch {
                                 expected: arg_def.ty.name(),
@@ -291,7 +291,7 @@ impl Parser {
         node_def: &NodeDef,
         schema: &Schema,
         source: &Arc<NamedSource<String>>,
-    ) -> Vec<DslDiagnostic> {
+    ) -> Vec<DglDiagnostic> {
         let mut diagnostics = Vec::new();
         let mut validated_props = std::collections::HashSet::new();
 
@@ -300,7 +300,7 @@ impl Parser {
             if prop_def.required {
                 let value = self.get_property_value(node, prop_name);
                 if value.is_none() {
-                    diagnostics.push(DslDiagnostic::error(
+                    diagnostics.push(DglDiagnostic::error(
                         source.clone(),
                         DiagnosticKind::MissingProperty {
                             property: prop_name.clone(),
@@ -332,7 +332,7 @@ impl Parser {
                     ));
                 } else if !node_def.allow_unknown_properties {
                     // Unknown property in strict mode
-                    diagnostics.push(DslDiagnostic::error(
+                    diagnostics.push(DglDiagnostic::error(
                         source.clone(),
                         DiagnosticKind::UnknownProperty {
                             property: prop_name_str.to_string(),
@@ -390,12 +390,12 @@ impl Parser {
         schema: &Schema,
         source: &Arc<NamedSource<String>>,
         span: miette::SourceSpan,
-    ) -> Vec<DslDiagnostic> {
+    ) -> Vec<DglDiagnostic> {
         let mut diagnostics = Vec::new();
 
         // Type validation
         if !prop_def.ty.matches(value) {
-            diagnostics.push(DslDiagnostic::error(
+            diagnostics.push(DglDiagnostic::error(
                 source.clone(),
                 DiagnosticKind::TypeMismatch {
                     expected: prop_def.ty.name(),
@@ -410,7 +410,7 @@ impl Parser {
             if let Some(enum_def) = schema.get_enum(enum_name) {
                 if let Some(string_value) = value.as_string() {
                     if !enum_def.is_valid(string_value) {
-                        diagnostics.push(DslDiagnostic::error(
+                        diagnostics.push(DglDiagnostic::error(
                             source.clone(),
                             DiagnosticKind::InvalidValue {
                                 message: format!(
@@ -433,7 +433,7 @@ impl Parser {
         if let ValueType::Custom { validator: Some(validator_name), .. } = &prop_def.ty {
             if let Some(type_validator) = schema.get_type_validator(validator_name) {
                 if let Err(err) = type_validator.validate(value) {
-                    diagnostics.push(DslDiagnostic::error(
+                    diagnostics.push(DglDiagnostic::error(
                         source.clone(),
                         DiagnosticKind::ValidationError {
                             message: err,
@@ -456,7 +456,7 @@ impl Parser {
         node_def: &NodeDef,
         schema: &Schema,
         source: &Arc<NamedSource<String>>,
-    ) -> Vec<DslDiagnostic> {
+    ) -> Vec<DglDiagnostic> {
         let mut diagnostics = Vec::new();
 
         // Validate each child node
@@ -498,7 +498,7 @@ impl Parser {
                 ));
             } else if !node_def.allow_unknown_children {
                 // Unknown child in strict mode
-                diagnostics.push(DslDiagnostic::error(
+                diagnostics.push(DglDiagnostic::error(
                     source.clone(),
                     DiagnosticKind::UnknownNode {
                         node_name: child_name.to_string(),
@@ -574,7 +574,7 @@ pub struct ParsedDocument {
     pub semantic_info: Option<SemanticInfo>,
 
     /// Any diagnostics (warnings, etc.)
-    pub diagnostics: Vec<DslDiagnostic>,
+    pub diagnostics: Vec<DglDiagnostic>,
 
     /// Source information
     pub source: Arc<NamedSource<String>>,

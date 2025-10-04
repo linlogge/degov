@@ -4,7 +4,7 @@
 
 degov/
 ├── crates/
-│   ├── degov-core/             # Core engine: DSL, workflow, permissions
+│   ├── degov-core/             # Core engine: DGL, workflow, permissions
 │   ├── degov-crypto/           # Cryptographic primitives, KMS/HSM integration
 │   ├── degov-identity/         # DID, VC, citizen identity management
 │   ├── degov-storage/          # FoundationDB layer + Merkle Search Trees (MST)

@@ -1,6 +1,6 @@
 //! Tests for dynamic schema modifiers
 
-use degov_dsl::prelude::*;
+use degov_dgl::prelude::*;
 
 #[test]
 fn test_basic_schema_modifier() {
@@ -47,7 +47,7 @@ catalog {
 }
     "#;
 
-    let parser = Parser::new(source_book.to_string(), "test.dgv".to_string()).with_schema(schema.clone());
+    let parser = Parser::new(source_book.to_string(), "test.dgl".to_string()).with_schema(schema.clone());
     let result = parser.parse();
     assert!(result.is_ok(), "Should parse book successfully");
 
@@ -58,7 +58,7 @@ catalog {
 }
     "#;
 
-    let parser = Parser::new(source_movie.to_string(), "test.dgv".to_string()).with_schema(schema.clone());
+    let parser = Parser::new(source_movie.to_string(), "test.dgl".to_string()).with_schema(schema.clone());
     let result = parser.parse();
     assert!(result.is_ok(), "Should parse movie successfully");
 
@@ -70,7 +70,7 @@ catalog {
     "#;
 
     let parser =
-        Parser::new(source_book_missing.to_string(), "test.dgv".to_string()).with_schema(schema.clone());
+        Parser::new(source_book_missing.to_string(), "test.dgl".to_string()).with_schema(schema.clone());
     let result = parser.parse();
     assert!(result.is_err(), "Should fail when book is missing required author");
 
@@ -81,7 +81,7 @@ catalog {
 }
     "#;
 
-    let parser = Parser::new(source_movie_missing.to_string(), "test.dgv".to_string())
+    let parser = Parser::new(source_movie_missing.to_string(), "test.dgl".to_string())
         .with_schema(schema.clone());
     let result = parser.parse();
     assert!(result.is_err(), "Should fail when movie is missing required director");
@@ -150,7 +150,7 @@ model {
 }
     "#;
 
-    let parser = Parser::new(source_datamodel.to_string(), "test.dgv".to_string())
+    let parser = Parser::new(source_datamodel.to_string(), "test.dgl".to_string())
         .with_schema(schema.clone());
     let result = parser.parse();
     assert!(result.is_ok(), "Should parse DataModel successfully");
@@ -166,7 +166,7 @@ model {
     "#;
 
     let parser =
-        Parser::new(source_service.to_string(), "test.dgv".to_string()).with_schema(schema.clone());
+        Parser::new(source_service.to_string(), "test.dgl".to_string()).with_schema(schema.clone());
     let result = parser.parse();
     assert!(result.is_ok(), "Should parse Service successfully");
 }
@@ -206,7 +206,7 @@ app {
 }
     "#;
 
-    let parser = Parser::new(source_dev.to_string(), "test.dgv".to_string()).with_schema(schema.clone());
+    let parser = Parser::new(source_dev.to_string(), "test.dgl".to_string()).with_schema(schema.clone());
     let result = parser.parse();
     assert!(result.is_ok(), "Should parse development config successfully");
 
@@ -217,7 +217,7 @@ app {
 }
     "#;
 
-    let parser = Parser::new(source_prod.to_string(), "test.dgv".to_string()).with_schema(schema.clone());
+    let parser = Parser::new(source_prod.to_string(), "test.dgl".to_string()).with_schema(schema.clone());
     let result = parser.parse();
     assert!(result.is_ok(), "Should parse production config successfully");
 }
@@ -269,7 +269,7 @@ schema {
 }
     "#;
 
-    let parser = Parser::new(source.to_string(), "test.dgv".to_string()).with_schema(schema);
+    let parser = Parser::new(source.to_string(), "test.dgl".to_string()).with_schema(schema);
     let result = parser.parse();
     assert!(result.is_ok(), "Should parse nested modified schema successfully");
 }
@@ -305,12 +305,12 @@ catalog {
 }
     "#;
 
-    let parser = Parser::new(source.to_string(), "test.dgv".to_string()).with_schema(schema.clone());
+    let parser = Parser::new(source.to_string(), "test.dgl".to_string()).with_schema(schema.clone());
     let result = parser.parse();
     assert!(result.is_ok(), "Should parse successfully");
 
     let doc = result.unwrap();
-    let semantic_info = degov_dsl::semantic::SemanticInfo::analyze(&doc.document, &schema, source);
+    let semantic_info = degov_dgl::semantic::SemanticInfo::analyze(&doc.document, &schema, source);
 
     // Check that semantic analysis found symbols
     assert!(!semantic_info.document_symbols.is_empty(), "Should have document symbols");

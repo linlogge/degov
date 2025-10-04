@@ -1,15 +1,15 @@
-# DeGov DSL Language Server Setup Guide
+# DeGov DGL Language Server Setup Guide
 
-This guide explains how to set up and use the DeGov DSL Language Server with Visual Studio Code.
+This guide explains how to set up and use the DeGov DGL Language Server with Visual Studio Code.
 
 ## Overview
 
-The DeGov DSL Language Server provides real-time validation and IntelliSense for DeGov YAML files:
+The DeGov DGL Language Server provides real-time validation and IntelliSense for DeGov YAML files:
 
 - **Real-time validation** as you type
 - **Error diagnostics** with precise locations
 - **Inheritance validation** and circular dependency detection
-- **Auto-completion** for DSL keywords
+- **Auto-completion** for DGL keywords
 - **Hover information** for documentation
 
 ## Architecture
@@ -25,12 +25,12 @@ The DeGov DSL Language Server provides real-time validation and IntelliSense for
 ┌──────────▼──────────┐
 │   degov-lsp Server  │  (Rust)
 │  - YAML Parsing     │
-│  - DSL Validation   │
+│  - DGL Validation   │
 │  - Graph Resolution │
 └──────────┬──────────┘
            │
 ┌──────────▼──────────┐
-│    degov-dsl Crate  │  (Rust)
+│    degov-dgl Crate  │  (Rust)
 │  - Parser           │
 │  - DependencyGraph  │
 │  - Validation       │
@@ -79,7 +79,7 @@ npm run compile
 make package-extension
 
 # Install the .vsix file
-code --install-extension vscode-extension/degov-dsl-*.vsix
+code --install-extension vscode-extension/degov-dgl-*.vsix
 ```
 
 ## Usage
@@ -101,7 +101,7 @@ metadata
   id: de.example/person  # ✗ Missing colon - shows error
 ```
 
-#### 2. DSL Structure Validation
+#### 2. DGL Structure Validation
 
 ```yaml
 apiVersion: v1
@@ -143,14 +143,14 @@ Type in a YAML file and get suggestions:
 
 #### 6. Hover Information
 
-Hover over DSL keywords to see documentation.
+Hover over DGL keywords to see documentation.
 
 ### Commands
 
 Access via Command Palette (Ctrl/Cmd+Shift+P):
 
-- **DeGov DSL: Restart Language Server** - Restart if something goes wrong
-- **DeGov DSL: Show Output Channel** - View extension logs
+- **DeGov DGL: Restart Language Server** - Restart if something goes wrong
+- **DeGov DGL: Show Output Channel** - View extension logs
 
 ### Configuration
 
@@ -158,8 +158,8 @@ Settings available in VSCode settings (File → Preferences → Settings):
 
 ```json
 {
-  "degovDsl.trace.server": "off",  // or "messages", "verbose"
-  "degovDsl.servicesPath": "services"
+  "degovDgl.trace.server": "off",  // or "messages", "verbose"
+  "degovDgl.servicesPath": "services"
 }
 ```
 
@@ -200,8 +200,8 @@ npm run watch
 ### Testing
 
 ```bash
-# Test the DSL crate
-cargo test -p degov-dsl
+# Test the DGL crate
+cargo test -p degov-dgl
 
 # Test the LSP server
 cargo test -p degov-lsp
@@ -220,11 +220,11 @@ npm test
 **Solutions:**
 1. Check that you're in a workspace with a `services/` directory
 2. Open a YAML file that matches the activation patterns
-3. Check VSCode's Output channel: View → Output → "DeGov DSL"
+3. Check VSCode's Output channel: View → Output → "DeGov DGL"
 
 ### Server Not Found Error
 
-**Symptom:** "DeGov DSL Language Server not found"
+**Symptom:** "DeGov DGL Language Server not found"
 
 **Solutions:**
 1. Build the server: `cargo build -p degov-lsp --release`
@@ -238,7 +238,7 @@ npm test
 **Solutions:**
 1. Check file is valid YAML (VSCode should show YAML errors)
 2. Check file path matches activation pattern
-3. Restart language server: Command Palette → "DeGov DSL: Restart Language Server"
+3. Restart language server: Command Palette → "DeGov DGL: Restart Language Server"
 4. Check Output channel for server errors
 
 ### Server Crashes
@@ -266,7 +266,7 @@ npm test
 - **LSP Server Binary:** `target/release/degov-lsp`
 - **Extension Source:** `vscode-extension/src/extension.ts`
 - **Extension Build:** `vscode-extension/out/extension.js`
-- **Extension Package:** `vscode-extension/degov-dsl-*.vsix`
+- **Extension Package:** `vscode-extension/degov-dgl-*.vsix`
 
 ## Debugging
 
@@ -294,7 +294,7 @@ npm test
 4. For detailed LSP communication:
    ```json
    {
-     "degovDsl.trace.server": "verbose"
+     "degovDgl.trace.server": "verbose"
    }
    ```
 
@@ -314,7 +314,7 @@ npm test
 - [Language Server Protocol Specification](https://microsoft.github.io/language-server-protocol/)
 - [tower-lsp Documentation](https://docs.rs/tower-lsp/)
 - [VSCode Extension API](https://code.visualstudio.com/api)
-- [DeGov DSL Documentation](./crates/degov-dsl/README.md)
+- [DeGov DGL Documentation](./crates/degov-dgl/README.md)
 
 ## Support
 

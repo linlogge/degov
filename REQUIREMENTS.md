@@ -21,7 +21,7 @@ The project's scope covers the development of the core DGF backend, a peer-to-pe
 - **Citizen:** An end-user interacting with an authority's portal
 - **CRDT:** Conflict-free Replicated Data Type. A data structure that allows for concurrent updates without coordination
 - **DID:** Decentralized Identifier. A globally unique identifier that does not require a centralized registry
-- **DSL:** Domain-Specific Language. A computer language specialized for a particular application domain
+- **DGL:** Domain-Specific Language. A computer language specialized for a particular application domain
 - **eID:** Electronic Identification
 - **FDB:** FoundationDB
 - **MST:** Merkle Search Tree. A data structure that combines properties of Merkle Trees and search trees for verifiable queries
@@ -38,7 +38,7 @@ DGF is a foundational infrastructure product. It is not a SaaS offering but a se
 ### 2.2 Product Functions
 
 - **Citizen Identity & Data Management:** Provides citizens with a self-sovereign digital identity to interact with government services, control their personal data, and provide/revoke consent for its use
-- **Service Creation & Customization:** Empowers authorities to define data models and create complex workflows through both a YAML DSL and a graphical low-code builder
+- **Service Creation & Customization:** Empowers authorities to define data models and create complex workflows through both a YAML DGL and a graphical low-code builder
 - **Secure Inter-Authority Communication:** Enables different government entities to securely and verifiably exchange data in a peer-to-peer manner
 - **Third-Party Extensibility:** Offers a robust Plugin API for private companies and developers to build value-added services that integrate with the government ecosystem
 - **Verifiable Credential & Certificate Issuance:** Allows authorities to issue digitally signed, verifiable documents such as eIDs, diplomas, and licenses
@@ -46,7 +46,7 @@ DGF is a foundational infrastructure product. It is not a SaaS offering but a se
 ### 2.3 User Characteristics
 
 - **Citizen:** Residents who need to access government services. They require a simple, intuitive, accessible, and transparent interface
-- **Authority Administrator:** Non-technical or semi-technical staff responsible for configuring services, managing workflows, and defining permissions using the low-code builder or YAML DSL
+- **Authority Administrator:** Non-technical or semi-technical staff responsible for configuring services, managing workflows, and defining permissions using the low-code builder or YAML DGL
 - **Authority Developer:** Technical staff who build custom UI components, write JS-based workflow extensions, and manage the deployment of the DGF instance
 - **Third-Party Developer:** External developers building applications that integrate with the DGF ecosystem via the REST and Plugin APIs
 
@@ -60,9 +60,9 @@ DGF is a foundational infrastructure product. It is not a SaaS offering but a se
 
 ### 3.1 Functional Requirements
 
-#### 3.1.1 Core Engine & DSL
+#### 3.1.1 Core Engine & DGL
 
-The system shall provide a Domain-Specific Language (DSL) defined in YAML. The DSL must allow an administrator to define:
+The system shall provide a Domain-Specific Language (DGL) defined in YAML. The DGL must allow an administrator to define:
 
 - **Data Models:** Schemas for data entities (e.g., Citizen, BusinessRegistration) with typed fields
 - **Workflows:** Multi-step processes with defined states, transitions, and associated actions
@@ -70,7 +70,7 @@ The system shall provide a Domain-Specific Language (DSL) defined in YAML. The D
 
 #### 3.1.2 Workflow Engine
 
-A workflow engine shall be implemented to interpret and execute the workflows defined in the DSL. The engine must support embedding JavaScript (JS) for custom business logic within workflow transitions. The JS runtime must be sandboxed and have secure, context-aware access to a core set of framework functions (e.g., database read/write, cryptographic operations).
+A workflow engine shall be implemented to interpret and execute the workflows defined in the DGL. The engine must support embedding JavaScript (JS) for custom business logic within workflow transitions. The JS runtime must be sandboxed and have secure, context-aware access to a core set of framework functions (e.g., database read/write, cryptographic operations).
 
 #### 3.1.3 Citizen & Identity Management
 
@@ -105,7 +105,7 @@ The system must provide user-friendly tools for citizens to manage their cryptog
 
 #### 3.1.9 Low-Code Administration Tools
 
-In addition to the YAML DSL, the framework shall provide a web-based, graphical low-code builder. This builder will enable Authority Administrators to visually create and modify data models and workflows. The tool will generate compliant YAML in the background, abstracting complexity from non-technical users.
+In addition to the YAML DGL, the framework shall provide a web-based, graphical low-code builder. This builder will enable Authority Administrators to visually create and modify data models and workflows. The tool will generate compliant YAML in the background, abstracting complexity from non-technical users.
 
 ### 3.2 External Interface Requirements
 

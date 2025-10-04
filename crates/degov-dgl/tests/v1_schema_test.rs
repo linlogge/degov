@@ -1,6 +1,6 @@
-//! Test the v1 schema with real DSL examples
+//! Test the v1 schema with real DGL examples
 
-use degov_dsl::{prelude::*, v1};
+use degov_dgl::{prelude::*, v1};
 
 #[test]
 fn test_v1_schema_root_property() {
@@ -12,7 +12,7 @@ definition {
 }
     "#;
 
-    let parser = Parser::new(source.to_string(), "v1-schema-test.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "v1-schema-test.dgl".to_string());
     let schema = v1::create_schema();
     let parser = parser.with_schema(schema);
 

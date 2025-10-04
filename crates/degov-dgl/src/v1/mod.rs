@@ -1,12 +1,12 @@
-//! DeGov DSL v1 Schema Implementation
+//! DeGov DGL v1 Schema Implementation
 //!
-//! This module provides the complete schema definition for the DeGov DSL v1,
+//! This module provides the complete schema definition for the DeGov DGL v1,
 //! supporting DataModel, Service, Workflow, Permission, and Credential definitions.
 use crate::validation::create_nsid_validator;
 
 use crate::prelude::*;
 
-/// Create the complete DeGov DSL v1 schema
+/// Create the complete DeGov DGL v1 schema
 pub fn create_schema() -> Schema {
     let kind_enum = EnumDef::new(vec![
         "DataModel".to_string(),
@@ -52,7 +52,7 @@ Definition containing a kind property and a set of properties.
 
     let root = root.with_child(definition);
 
-    let mut schema = Schema::new("degov-dsl-v1", root);
+    let mut schema = Schema::new("degov-dgl-v1", root);
     schema.define_enum("kind", kind_enum);
     schema.register_type_validator("nsid", create_nsid_validator());
 

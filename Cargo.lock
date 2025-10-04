@@ -1029,7 +1029,7 @@ dependencies = [
  "clap-cargo",
  "colored",
  "degov-core",
- "degov-dsl",
+ "degov-dgl",
  "degov-server",
  "miette",
  "tokio",
@@ -1061,7 +1061,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "degov-dsl"
+name = "degov-dgl"
 version = "0.1.0"
 dependencies = [
  "anyhow",
@@ -1098,7 +1098,7 @@ name = "degov-lsp"
 version = "0.1.0"
 dependencies = [
  "dashmap 6.1.0",
- "degov-dsl",
+ "degov-dgl",
  "kdl",
  "miette",
  "ropey",

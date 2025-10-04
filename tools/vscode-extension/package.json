@@ -1,7 +1,7 @@
 {
-	"name": "degov-dsl",
-	"displayName": "DeGov DSL",
-	"description": "Language support for DeGov DSL (.dgv files)",
+	"name": "degov",
+	"displayName": "DeGov",
+	"description": "VS Code extension for DeGov",
 	"version": "0.0.1",
 	"publisher": "degov",
 	"repository": "https://github.com/degov/degov",
@@ -11,16 +11,14 @@
 	"categories": [
 		"Programming Languages"
 	],
-	"activationEvents": [
-		"onLanguage:dgv"
-	],
+	"activationEvents": [],
 	"main": "./out/extension.js",
 	"contributes": {
 		"languages": [
 			{
-				"id": "dgv",
-				"aliases": ["DeGov DSL", "dgv"],
-				"extensions": [".dgv"],
+				"id": "dgl",
+				"aliases": ["DeGov DGL", "dgl"],
+				"extensions": [".dgl"],
 				"configuration": "./language-configuration.json",
 				"icon": {
 					"light": "./icon.png",
@@ -30,16 +28,16 @@
 		],
 		"grammars": [
 			{
-				"language": "dgv",
-				"scopeName": "source.dgv",
-				"path": "./syntaxes/dgv.tmLanguage.json"
+				"language": "dgl",
+				"scopeName": "source.dgl",
+				"path": "./syntaxes/dgl.tmLanguage.json"
 			}
 		],
 		"configuration": {
 			"type": "object",
-			"title": "DeGov DSL",
+			"title": "DeGov DGL",
 			"properties": {
-				"degovDsl.trace.server": {
+				"degovDgl.trace.server": {
 					"type": "string",
 					"enum": ["off", "messages", "verbose"],
 					"default": "off",

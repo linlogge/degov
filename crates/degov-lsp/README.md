@@ -1,17 +1,17 @@
 # degov-lsp
 
-Language Server Protocol (LSP) server for DeGov YAML DSL.
+Language Server Protocol (LSP) server for DeGov YAML DGL.
 
 ## Overview
 
-This is a Language Server implementation that provides real-time validation and IntelliSense for DeGov DSL YAML files in editors that support LSP (primarily Visual Studio Code).
+This is a Language Server implementation that provides real-time validation and IntelliSense for DeGov DGL YAML files in editors that support LSP (primarily Visual Studio Code).
 
 ## Features
 
-- **Real-time validation**: Validates YAML syntax and DSL structure as you type
+- **Real-time validation**: Validates YAML syntax and DGL structure as you type
 - **Diagnostics**: Reports errors and warnings with precise locations
 - **Inheritance validation**: Checks model inheritance and detects circular dependencies  
-- **Auto-completion**: Suggests DSL keywords and structures
+- **Auto-completion**: Suggests DGL keywords and structures
 - **Hover information**: Shows documentation on hover
 
 ## Building
@@ -39,7 +39,7 @@ It's designed to be launched by an editor/IDE, not run directly by users.
 The server uses:
 - **tower-lsp**: LSP framework for Rust
 - **tokio**: Async runtime
-- **degov-dsl**: Core DSL parsing and validation
+- **degov-dgl**: Core DGL parsing and validation
 
 ## Validation Features
 

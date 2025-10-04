@@ -1,4 +1,4 @@
-//! DeGov DSL Framework
+//! DeGov DGL Framework
 //!
 //! A comprehensive framework for building KDL-based domain-specific languages.
 //! This library provides:
@@ -6,16 +6,16 @@
 //! - **Schema Definition**: Define language structure with Rust types
 //! - **Validation**: Both sync and async validation with custom functions
 //! - **IDE Support**: Semantic analysis, hover, completion, go-to-definition
-//! - **Graph Conversion**: Convert DSL to petgraph for analysis
+//! - **Graph Conversion**: Convert DGL to petgraph for analysis
 //! - **Error Reporting**: Rich diagnostics with miette integration
 //!
 //! # Example
 //!
 //! ```rust,ignore
-//! use degov_dsl::prelude::*;
+//! use degov_dgl::prelude::*;
 //!
 //! // Define your schema
-//! let mut schema = Schema::new("my-dsl");
+//! let mut schema = Schema::new("my-dgl");
 //! schema.add_root("definition");
 //! schema.define_node("definition", NodeDef::new()
 //!     .with_description("Root definition node")
@@ -45,7 +45,7 @@ pub mod syntax;
 pub mod v1;
 
 // Re-export main types
-pub use error::{DslError, DslDiagnostic, DiagnosticKind, Result};
+pub use error::{DglError, DglDiagnostic, DiagnosticKind, Result};
 pub use span::Spanned;
 pub use schema::{
     Schema, NodeDef, ArgumentDef, PropertyDef, ValueType, KdlValue,
@@ -69,6 +69,6 @@ pub mod prelude {
         EnumDef, ValidatorDef, TypeValidatorDef, CompletionItem, CompletionKind,
         Parser, ParsedDocument,
         Validator, AsyncValidator, ValidatorRegistry,
-        Result, DslError,
+        Result, DglError,
     };
 }

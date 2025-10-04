@@ -1,9 +1,9 @@
 use dashmap::DashMap;
-use degov_dsl::v1::create_schema;
+use degov_dgl::v1::create_schema;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
-use degov_dsl::{Parser, Schema, SemanticInfo, CompletionEngine};
+use degov_dgl::{Parser, Schema, SemanticInfo, CompletionEngine};
 use miette::Diagnostic as _;
 use ropey::Rope;
 
@@ -63,7 +63,7 @@ impl Backend {
             Ok(parsed) => {
                 // Successfully parsed and validated
                 self.client
-                    .log_message(MessageType::INFO, "✓ Valid DSL document")
+                    .log_message(MessageType::INFO, "✓ Valid DGL document")
                     .await;
                 
                 // Convert any warnings to diagnostics
@@ -78,7 +78,7 @@ impl Backend {
                             ),
                             diag.severity().map(to_lsp_sev),
                             diag.code().map(|c| NumberOrString::String(c.to_string())),
-                            Some("degov-dsl".to_string()),
+                            Some("degov-dgl".to_string()),
                             diag.to_string(),
                             None,
                             None,
@@ -86,9 +86,9 @@ impl Backend {
                     })
                     .collect()
             }
-            Err(dsl_err) => {
+            Err(dgl_err) => {
                 // Convert all diagnostics to LSP diagnostics
-                dsl_err
+                dgl_err
                     .diagnostics
                     .iter()
                     .map(|diag| {
@@ -99,7 +99,7 @@ impl Backend {
                             ),
                             diag.severity().map(to_lsp_sev),
                             diag.code().map(|c| NumberOrString::String(c.to_string())),
-                            Some("degov-dsl".to_string()),
+                            Some("degov-dgl".to_string()),
                             diag.to_string(),
                             None,
                             None,
@@ -216,7 +216,7 @@ impl LanguageServer for Backend {
                 ..Default::default()
             },
             server_info: Some(ServerInfo {
-                name: "DeGov DSL Language Server".to_string(),
+                name: "DeGov DGL Language Server".to_string(),
                 version: Some("0.1.0".to_string()),
             }),
         })
@@ -224,13 +224,13 @@ impl LanguageServer for Backend {
 
     async fn initialized(&self, _: InitializedParams) {
         self.client
-            .log_message(MessageType::INFO, "DeGov DSL Language Server initialized")
+            .log_message(MessageType::INFO, "DeGov DGL Language Server initialized")
             .await;
     }
 
     async fn shutdown(&self) -> Result<()> {
         self.client
-            .log_message(MessageType::INFO, "DeGov DSL Language Server shutting down")
+            .log_message(MessageType::INFO, "DeGov DGL Language Server shutting down")
             .await;
         Ok(())
     }

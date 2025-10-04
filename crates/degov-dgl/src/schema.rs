@@ -1,7 +1,7 @@
 //! Schema Definition Framework
 //!
 //! This module provides a framework for defining KDL-based language schemas.
-//! It's completely generic and can be used to build any KDL-based DSL.
+//! It's completely generic and can be used to build any KDL-based DGL.
 
 use std::collections::HashMap;
 use std::sync::Arc;

@@ -3,19 +3,19 @@ use std::fmt::{self, Display};
 use std::sync::Arc;
 use miette::{Diagnostic, LabeledSpan, Severity, SourceSpan, NamedSource};
 
-/// The top-level error type for DSL parsing failures.
+/// The top-level error type for DGL parsing failures.
 /// Contains multiple diagnostics that can be displayed together.
 #[derive(Debug, Clone)]
-pub struct DslError {
+pub struct DglError {
     /// Original input with source name for better error messages
     pub source: Arc<NamedSource<String>>,
     
     /// All diagnostics collected during parsing
-    pub diagnostics: Vec<DslDiagnostic>,
+    pub diagnostics: Vec<DglDiagnostic>,
 }
 
-impl DslError {
-    /// Create a new DslError with the given source
+impl DglError {
+    /// Create a new DglError with the given source
     pub fn new(input: String, source_name: String) -> Self {
         Self {
             source: Arc::new(NamedSource::new(source_name, input)),
@@ -23,8 +23,8 @@ impl DslError {
         }
     }
     
-    /// Create a DslError with a single diagnostic
-    pub fn single(diagnostic: DslDiagnostic) -> Self {
+    /// Create a DglError with a single diagnostic
+    pub fn single(diagnostic: DglDiagnostic) -> Self {
         Self {
             source: diagnostic.source.clone(),
             diagnostics: vec![diagnostic],
@@ -32,7 +32,7 @@ impl DslError {
     }
     
     /// Add a diagnostic to this error
-    pub fn add_diagnostic(&mut self, diagnostic: DslDiagnostic) {
+    pub fn add_diagnostic(&mut self, diagnostic: DglDiagnostic) {
         self.diagnostics.push(diagnostic);
     }
     
@@ -52,7 +52,7 @@ impl DslError {
     }
 }
 
-impl Display for DslError {
+impl Display for DglError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let error_count = self.error_count();
         let warning_count = self.warning_count();
@@ -68,9 +68,9 @@ impl Display for DslError {
     }
 }
 
-impl Error for DslError {}
+impl Error for DglError {}
 
-impl Diagnostic for DslError {
+impl Diagnostic for DglError {
     fn source_code(&self) -> Option<&dyn miette::SourceCode> {
         Some(&*self.source)
     }
@@ -82,9 +82,9 @@ impl Diagnostic for DslError {
     }
 }
 
-/// An individual diagnostic message for a DSL parsing issue
+/// An individual diagnostic message for a DGL parsing issue
 #[derive(Debug, Clone)]
-pub struct DslDiagnostic {
+pub struct DglDiagnostic {
     /// Shared source for the diagnostic (includes filename)
     pub source: Arc<NamedSource<String>>,
     
@@ -101,7 +101,7 @@ pub struct DslDiagnostic {
     pub severity: Severity,
 }
 
-impl DslDiagnostic {
+impl DglDiagnostic {
     /// Create a new error diagnostic
     pub fn error(source: Arc<NamedSource<String>>, kind: DiagnosticKind, span: SourceSpan) -> Self {
         Self {
@@ -131,15 +131,15 @@ impl DslDiagnostic {
     }
 }
 
-impl Display for DslDiagnostic {
+impl Display for DglDiagnostic {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.kind.message())
     }
 }
 
-impl Error for DslDiagnostic {}
+impl Error for DglDiagnostic {}
 
-impl Diagnostic for DslDiagnostic {
+impl Diagnostic for DglDiagnostic {
     fn source_code(&self) -> Option<&dyn miette::SourceCode> {
         Some(&*self.source)
     }
@@ -170,7 +170,7 @@ impl Diagnostic for DslDiagnostic {
     }
 }
 
-/// Different kinds of diagnostics that can occur during DSL parsing
+/// Different kinds of diagnostics that can occur during DGL parsing
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DiagnosticKind {
     ParseError { message: String },
@@ -188,16 +188,16 @@ pub enum DiagnosticKind {
 impl DiagnosticKind {
     pub fn code(&self) -> &'static str {
         match self {
-            Self::ParseError { .. } => "dsl::parse_error",
-            Self::MissingNode { .. } => "dsl::missing_node",
-            Self::MissingChild { .. } => "dsl::missing_child",
-            Self::MissingProperty { .. } => "dsl::missing_property",
-            Self::TypeMismatch { .. } => "dsl::type_mismatch",
-            Self::InvalidValue { .. } => "dsl::invalid_value",
-            Self::ValidationError { .. } => "dsl::validation",
-            Self::Duplicate { .. } => "dsl::duplicate",
-            Self::UnknownNode { .. } => "dsl::unknown_node",
-            Self::UnknownProperty { .. } => "dsl::unknown_property",
+            Self::ParseError { .. } => "dgl::parse_error",
+            Self::MissingNode { .. } => "dgl::missing_node",
+            Self::MissingChild { .. } => "dgl::missing_child",
+            Self::MissingProperty { .. } => "dgl::missing_property",
+            Self::TypeMismatch { .. } => "dgl::type_mismatch",
+            Self::InvalidValue { .. } => "dgl::invalid_value",
+            Self::ValidationError { .. } => "dgl::validation",
+            Self::Duplicate { .. } => "dgl::duplicate",
+            Self::UnknownNode { .. } => "dgl::unknown_node",
+            Self::UnknownProperty { .. } => "dgl::unknown_property",
         }
     }
     
@@ -243,7 +243,7 @@ impl DiagnosticKind {
     
     pub fn help(&self) -> Option<String> {
         match self {
-            Self::ParseError { .. } => Some("Check the syntax of your DSL file".to_string()),
+            Self::ParseError { .. } => Some("Check the syntax of your DGL file".to_string()),
             Self::MissingNode { node_name } => {
                 Some(format!("Add a '{}' node to define this field", node_name))
             }
@@ -269,12 +269,12 @@ impl DiagnosticKind {
     }
 }
 
-pub type Result<T> = std::result::Result<T, DslError>;
+pub type Result<T> = std::result::Result<T, DglError>;
 
-pub fn from_kdl_error(err: kdl::KdlError, source_name: String) -> DslError {
+pub fn from_kdl_error(err: kdl::KdlError, source_name: String) -> DglError {
     let source = Arc::new(NamedSource::new(source_name, err.input.to_string()));
     let diagnostics = err.diagnostics.into_iter().map(|kdl_diag| {
-        DslDiagnostic {
+        DglDiagnostic {
             source: source.clone(),
             kind: DiagnosticKind::ParseError {
                 message: kdl_diag.message.unwrap_or_else(|| "Unknown parse error".to_string()),
@@ -285,7 +285,7 @@ pub fn from_kdl_error(err: kdl::KdlError, source_name: String) -> DslError {
         }
     }).collect();
     
-    DslError {
+    DglError {
         source,
         diagnostics,
     }

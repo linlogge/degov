@@ -29,20 +29,20 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Configure client options
 	const clientOptions: LanguageClientOptions = {
-		// Register the server for DeGov DSL files
+		// Register the server for DeGov DGL files
 		documentSelector: [
-			{ scheme: 'file', language: 'dgv' }
+			{ scheme: 'file', language: 'dgl' }
 		],
 		synchronize: {
-			// Notify the server about file changes to '.dgv' files in the workspace
-			fileEvents: vscode.workspace.createFileSystemWatcher('**/*.dgv')
+			// Notify the server about file changes to '.dgl' files in the workspace
+			fileEvents: vscode.workspace.createFileSystemWatcher('**/*.dgl')
 		}
 	};
 
 	// Create the language client and start it
 	client = new LanguageClient(
-		'degovDsl',
-		'DeGov DSL Language Server',
+		'degovDgl',
+		'DeGov DGL Language Server',
 		serverOptions,
 		clientOptions
 	);
@@ -50,7 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// Start the client (which also launches the server)
 	client.start();
 	
-	vscode.window.showInformationMessage('DeGov DSL extension activated');
+	vscode.window.showInformationMessage('DeGov DGL extension activated');
 }
 
 export function deactivate(): Thenable<void> | undefined {

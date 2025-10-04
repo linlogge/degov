@@ -13,7 +13,7 @@ pub fn handle_dgl_command(command: &DglCommands) -> miette::Result<()> {
     match command {
         DglCommands::Cat { path } => {
             let contents = std::fs::read_to_string(path).into_diagnostic()?;
-            degov_dsl::syntax::cat_text_ansi(&contents);
+            degov_dgl::syntax::cat_text_ansi(&contents);
             Ok(())
         }
     }

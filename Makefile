@@ -20,15 +20,15 @@ build-extension:
 	cd tools/vscode-extension && npm install && npm run compile
 
 # Package the extension
-package-extension: build-lsp build-exftension
+package-extension: build-lsp build-extension
 	@echo "Packaging VSCode extension..."
 	cd tools/vscode-extension && npm exec vsce package --no-dependencies
-	@echo "Extension packaged: tools/vscode-extension/degov-dsl-*.vsix"
+	@echo "Extension packaged: tools/vscode-extension/degov-dgl-*.vsix"
 
 # Install extension in development mode
 install-extension: build-lsp build-extension
 	@echo "Installing extension in VSCode..."
-	cd tools/vscode-extension && code --install-extension degov-dsl-*.vsix || echo "Build extension first with: make package-extension"
+	cd tools/vscode-extension && code --install-extension degov-dgl-*.vsix || echo "Build extension first with: make package-extension"
 
 # Run tests
 test:
@@ -48,7 +48,7 @@ watch-extension:
 
 # Help
 help:
-	@echo "DeGov DSL Build Commands:"
+	@echo "DeGov DGL Build Commands:"
 	@echo "  make build              - Build LSP server and extension"
 	@echo "  make build-lsp          - Build LSP server (release)"
 	@echo "  make build-lsp-debug    - Build LSP server (debug)"

@@ -1,6 +1,6 @@
 //! Parser Tests
 //!
-//! Comprehensive test suite for the DSL parser covering:
+//! Comprehensive test suite for the DGL parser covering:
 //! - Basic parsing (empty docs, nodes, properties, children)
 //! - Schema validation (required fields, type checking, enums)
 //! - Error handling (invalid syntax, type mismatches)
@@ -8,8 +8,8 @@
 //! - Real-world scenarios (data models, service definitions)
 //! - Edge cases (unicode, special characters, long values)
 
-use degov_dsl::prelude::*;
-use degov_dsl::{ArgumentDef, EnumDef, KdlValue};
+use degov_dgl::prelude::*;
+use degov_dgl::{ArgumentDef, EnumDef, KdlValue};
 
 // ============================================================================
 // BASIC PARSING TESTS
@@ -18,7 +18,7 @@ use degov_dsl::{ArgumentDef, EnumDef, KdlValue};
 #[test]
 fn test_empty_document() {
     let source = "";
-    let parser = Parser::new(source.to_string(), "empty.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "empty.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_ok());
@@ -29,7 +29,7 @@ fn test_empty_document() {
 #[test]
 fn test_single_node_no_schema() {
     let source = r#"node-name"#;
-    let parser = Parser::new(source.to_string(), "single.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "single.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_ok());
@@ -40,7 +40,7 @@ fn test_single_node_no_schema() {
 #[test]
 fn test_node_with_string_argument() {
     let source = r#"person "John Doe""#;
-    let parser = Parser::new(source.to_string(), "arg.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "arg.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_ok());
@@ -53,7 +53,7 @@ fn test_node_with_string_argument() {
 #[test]
 fn test_node_with_properties() {
     let source = r#"person name="John" age="30""#;
-    let parser = Parser::new(source.to_string(), "props.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "props.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_ok());
@@ -71,7 +71,7 @@ parent {
     child2 "value"
 }
     "#;
-    let parser = Parser::new(source.to_string(), "children.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "children.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_ok());
@@ -88,7 +88,7 @@ node1
 node2 "value"
 node3 key="value"
     "#;
-    let parser = Parser::new(source.to_string(), "multiple.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "multiple.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_ok());
@@ -108,7 +108,7 @@ fn test_required_property_present() {
         .with_property("name", PropertyDef::new(ValueType::String).required());
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "required.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "required.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -123,7 +123,7 @@ fn test_required_property_missing() {
         .with_property("name", PropertyDef::new(ValueType::String).required());
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "missing-required.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "missing-required.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -140,7 +140,7 @@ fn test_optional_property_missing() {
         .with_property("age", PropertyDef::new(ValueType::Integer)); // optional
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "optional.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "optional.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -159,7 +159,7 @@ fn test_string_type_validation() {
         .with_property("name", PropertyDef::new(ValueType::String));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "string-type.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "string-type.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -174,7 +174,7 @@ fn test_integer_type_validation() {
         .with_property("age", PropertyDef::new(ValueType::Integer));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "int-type.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "int-type.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -189,7 +189,7 @@ fn test_type_mismatch_error() {
         .with_property("age", PropertyDef::new(ValueType::Integer));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "type-mismatch.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "type-mismatch.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -206,7 +206,7 @@ fn test_boolean_type_validation() {
         .with_property("enabled", PropertyDef::new(ValueType::Boolean));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "bool-type.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "bool-type.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -231,7 +231,7 @@ fn test_enum_valid_value() {
     schema.root = schema.root.clone()
         .with_property("status", PropertyDef::new(ValueType::Enum("Status".to_string())));
     
-    let parser = Parser::new(source.to_string(), "enum-valid.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "enum-valid.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -252,7 +252,7 @@ fn test_enum_invalid_value() {
     schema.root = schema.root.clone()
         .with_property("status", PropertyDef::new(ValueType::Enum("Status".to_string())));
     
-    let parser = Parser::new(source.to_string(), "enum-invalid.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "enum-invalid.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -277,7 +277,7 @@ parent {
             .with_argument(ArgumentDef::new("value", ValueType::String)));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "child-present.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "child-present.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -295,7 +295,7 @@ parent {
     let root = NodeDef::new("parent"); // No children defined, strict mode
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "unexpected-child.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "unexpected-child.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -315,7 +315,7 @@ parent {
         .allow_unknown_children(); // Open schema
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "open-children.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "open-children.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -334,7 +334,7 @@ fn test_required_argument_present() {
         .with_argument(ArgumentDef::new("name", ValueType::String));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "arg-present.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "arg-present.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -349,7 +349,7 @@ fn test_required_argument_missing() {
         .with_argument(ArgumentDef::new("name", ValueType::String)); // required by default
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "arg-missing.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "arg-missing.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -365,7 +365,7 @@ fn test_optional_argument_missing() {
         .with_argument(ArgumentDef::new("name", ValueType::String).optional());
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "opt-arg-missing.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "opt-arg-missing.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -382,7 +382,7 @@ fn test_multiple_arguments() {
         .with_argument(ArgumentDef::new("age", ValueType::Integer));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "multi-args.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "multi-args.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -403,7 +403,7 @@ fn test_property_with_default_value() {
             .with_default(KdlValue::String("active".to_string())));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "default.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "default.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -429,7 +429,7 @@ person {
         .with_property("age", PropertyDef::new(ValueType::Integer));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "child-props.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "child-props.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -452,7 +452,7 @@ person name="John" {
         .with_property("country", PropertyDef::new(ValueType::String));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "mixed-props.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "mixed-props.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -472,7 +472,7 @@ person {
         .with_property("name", PropertyDef::new(ValueType::String).required());
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "required-child-prop.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "required-child-prop.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -493,7 +493,7 @@ person {
         .with_property("age", PropertyDef::new(ValueType::Integer));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "missing-child-prop.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "missing-child-prop.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -513,7 +513,7 @@ person {
         .with_property("age", PropertyDef::new(ValueType::Integer));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "child-type-mismatch.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "child-type-mismatch.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -534,7 +534,7 @@ fn test_root_properties_direct_format() {
         .with_property("version", PropertyDef::new(ValueType::String));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "root-direct.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "root-direct.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -556,7 +556,7 @@ config {
         .with_property("version", PropertyDef::new(ValueType::String));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "root-child.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "root-child.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -579,7 +579,7 @@ config name="MyApp" {
         .with_property("debug", PropertyDef::new(ValueType::String));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "root-mixed.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "root-mixed.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -603,7 +603,7 @@ person {
         .with_property("age", PropertyDef::new(ValueType::Integer));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "multi-root-props.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "multi-root-props.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -622,7 +622,7 @@ fn test_root_required_property_validation() {
         .with_property("version", PropertyDef::new(ValueType::String));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "root-missing-required.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "root-missing-required.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -659,7 +659,7 @@ app name="MyApp" version="1.0.0" {
         .with_child(server_node);
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "root-props-nested.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "root-props-nested.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -679,7 +679,7 @@ config {
         .with_property("port", PropertyDef::new(ValueType::Integer));
     let schema = Schema::new("test-schema", root);
     
-    let parser = Parser::new(source.to_string(), "root-type-error.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "root-type-error.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -706,7 +706,7 @@ config {
     schema.root = schema.root.clone()
         .with_property("environment", PropertyDef::new(ValueType::Enum("Environment".to_string())));
     
-    let parser = Parser::new(source.to_string(), "root-enum.dgv".to_string())
+    let parser = Parser::new(source.to_string(), "root-enum.dgl".to_string())
         .with_schema(schema);
     let result = parser.parse();
     
@@ -725,7 +725,7 @@ person {
     age 30
     unclosed {
 "#;
-    let parser = Parser::new(source.to_string(), "invalid-syntax.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "invalid-syntax.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_err());
@@ -734,7 +734,7 @@ person {
 #[test]
 fn test_malformed_property() {
     let source = r#"person name="#; // Missing value
-    let parser = Parser::new(source.to_string(), "malformed.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "malformed.dgl".to_string());
     let result = parser.parse();
     
     // This is actually invalid KDL syntax - the test expectation was wrong
@@ -757,7 +757,7 @@ root {
     }
 }
     "#;
-    let parser = Parser::new(source.to_string(), "nested.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "nested.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_ok());
@@ -766,7 +766,7 @@ root {
 #[test]
 fn test_mixed_arguments_and_properties() {
     let source = r#"person "John" "Doe" age="30" country="USA""#;
-    let parser = Parser::new(source.to_string(), "mixed.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "mixed.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_ok());
@@ -780,7 +780,7 @@ person "John" // inline comment
 /* block
    comment */
     "#;
-    let parser = Parser::new(source.to_string(), "comments.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "comments.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_ok());
@@ -807,7 +807,7 @@ definition {
     }
 }
     "#;
-    let parser = Parser::new(source.to_string(), "data-model.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "data-model.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_ok());
@@ -828,7 +828,7 @@ service {
     }
 }
     "#;
-    let parser = Parser::new(source.to_string(), "service.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "service.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_ok());
@@ -841,7 +841,7 @@ service {
 #[test]
 fn test_empty_string_values() {
     let source = r#"node value="""#;
-    let parser = Parser::new(source.to_string(), "empty-string.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "empty-string.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_ok());
@@ -850,7 +850,7 @@ fn test_empty_string_values() {
 #[test]
 fn test_unicode_content() {
     let source = r#"person name="日本" country="Deutschland" emoji="🎉""#;
-    let parser = Parser::new(source.to_string(), "unicode.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "unicode.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_ok());
@@ -859,7 +859,7 @@ fn test_unicode_content() {
 #[test]
 fn test_special_characters_in_strings() {
     let source = r#"text value="Hello\nWorld\t\"quoted\"""#;
-    let parser = Parser::new(source.to_string(), "special-chars.dgv".to_string());
+    let parser = Parser::new(source.to_string(), "special-chars.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_ok());
@@ -869,7 +869,7 @@ fn test_special_characters_in_strings() {
 fn test_very_long_property_value() {
     let long_string = "a".repeat(10000);
     let source = format!(r#"node value="{}""#, long_string);
-    let parser = Parser::new(source, "long-value.dgv".to_string());
+    let parser = Parser::new(source, "long-value.dgl".to_string());
     let result = parser.parse();
     
     assert!(result.is_ok());
