@@ -1,0 +1,25 @@
+[package]
+name = "degov-engine"
+version.workspace = true
+edition.workspace = true
+
+[[example]]
+name = "simple"
+path = "examples/simple.rs"
+
+[[example]]
+name = "database"
+path = "examples/database.rs"
+
+[dependencies]
+tokio = { workspace = true, features = ["full"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = "2.0"
+tracing = "0.1"
+parking_lot = "0.12"
+deno_core = "^0.355.0"
+rustyscript = { git = "https://github.com/linlogge/rustyscript", branch = "master", features = ["worker", "console", "url", "crypto", "web"] }
+
+[dev-dependencies]
+tracing-subscriber = "0.3"

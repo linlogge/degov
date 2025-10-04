@@ -1,27 +1,6 @@
 # DeGov - Decentralized Governance
 
-## Project Structure
-
-degov/
-├── crates/
-│   ├── degov-core/             # Core engine: DGL, workflow, permissions
-│   ├── degov-crypto/           # Cryptographic primitives, KMS/HSM integration
-│   ├── degov-identity/         # DID, VC, citizen identity management
-│   ├── degov-storage/          # FoundationDB layer + Merkle Search Trees (MST)
-│   ├── degov-network/          # P2P libp2p networking, inter-authority comms
-│   ├── degov-consent/          # Consent management & audit ledger
-│   ├── degov-api/              # REST API & gRPC gateway
-│   ├── degov-ui/               # Bindings for React UI framework (not full frontend)
-│   ├── degov-admin/            # Low-code builder backend
-│   ├── degov-governance/       # Federated governance & trust model
-│   └── degov-cli/              # CLI tools for deployment, admin, dev tasks
-├── examples/
-│   ├── citizen-portal/
-│   ├── inter-authority-demo/
-│   └── plugin-demo/
-├── tests/
-│   └── integration/          # Cross-crate integration tests
-└── Cargo.toml                # Workspace manifest
+DeGov is a decentralized, version-controlled, composable framework for defining and running government services with cryptographic identity and verifiable audit trails.
 
 ## Getting started
 

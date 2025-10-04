@@ -20,9 +20,12 @@ members = [
     "crates/degov-server",
     "crates/degov-dgl",
     "crates/degov-lsp",
+    "crates/degov-engine",
 ]
 
 [workspace.dependencies]
 tokio = { version = "1.44.1", features = ["full"] }
 serde = { version = "1.0.219", features = ["derive"] }
-serde_json = { version = "1.0.145" }
+serde_json = { version = "1.0.140" }
+thiserror = "1.0"
+anyhow = "1.0.100"

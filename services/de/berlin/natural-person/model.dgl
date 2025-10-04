@@ -13,3 +13,22 @@ definition {
         }
     }
 }
+
+definition "apply-for-identity-card" {
+    kind "Workflow"
+    
+    workflow {
+        step "validate-identity" {
+            description "Validate Identity"
+            script {
+                path "validate-identity.ts"
+            }
+        }
+        step "issue-identity-card" {
+            description "Issue Identity Card"
+            script {
+                path "issue-identity-card.ts"
+            }
+        }
+    }
+}

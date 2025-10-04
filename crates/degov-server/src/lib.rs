@@ -22,23 +22,11 @@ impl Server {
     }
 
     pub async fn start_inner(&self) -> Result<(), Box<dyn std::error::Error>> {
-        let db = Database::from_path("./fdb.cluster")?;
+        /* let db = Database::from_path("./fdb.cluster")?;
         let mut mst = MerkleSearchTree::new(db).await?;
-
-        let value = MerkleSearchTree::encode_value(&"tests".to_string())?;
-        println!("Value (DAG-CBOR encoded): {:?}", value);
-        println!("Value (DAG-CBOR encoded hex): {}", hex::encode(&value));
-
-        println!("Calling put_typed...");
-        mst.put_typed("test".to_string(), &"test".to_string()).await?;
-        println!("put_typed succeeded");
-
-        println!("Calling get_typed...");
-        let value: Option<String> = mst.get_typed("test").await?;
-        println!("Value Read: {:?}", value);
-
-        let proof = mst.generate_proof("test").await?;
-        println!("Proof: {:?}", proof);
+ */
+        
+        degov_api::start_server().await;
 
         Ok(())
     }
