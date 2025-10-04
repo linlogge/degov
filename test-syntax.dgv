@@ -1,9 +1,0 @@
-id "test.example/model"
-
-definition {
-    kind "DataModel"
-    model {
-        string "name"
-    }
-}
-

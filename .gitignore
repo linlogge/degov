@@ -4,6 +4,8 @@
 *.pdb
 Cargo.lock
 
+.turbo/
+
 node_modules/
 
 # IDE
