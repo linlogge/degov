@@ -1,9 +1,0 @@
-definition {
-    type "DataModel"
-    schema {
-        id {
-            type "string"
-            required #true
-        }
-    }
-}

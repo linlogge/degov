@@ -1,9 +1,15 @@
+id "de.berlin/natural-person"
+
 definition {
-    type "ObjectModel"
-    schema {
-        id {
-            type "string"
-            required #true
+    kind "DataModel"
+    model {
+        string "id" {
+            name "Id"
+            description ""
+        }
+        integer "given-name" {
+            name "Given Name"
+            description "Given Name"
         }
     }
 }

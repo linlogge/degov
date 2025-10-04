@@ -1,5 +1,0 @@
-// A valid DSL file for testing
-definition {
-    type "DataModel"
-}
-

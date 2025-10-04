@@ -17,18 +17,18 @@ build-lsp-debug:
 # Build the VSCode extension
 build-extension:
 	@echo "Building VSCode extension..."
-	cd vscode-extension && npm install && npm run compile
+	cd tools/vscode-extension && npm install && npm run compile
 
 # Package the extension
-package-extension: build-lsp build-extension
+package-extension: build-lsp build-exftension
 	@echo "Packaging VSCode extension..."
-	cd vscode-extension && npm exec vsce package --no-dependencies
-	@echo "Extension packaged: vscode-extension/degov-dsl-*.vsix"
+	cd tools/vscode-extension && npm exec vsce package --no-dependencies
+	@echo "Extension packaged: tools/vscode-extension/degov-dsl-*.vsix"
 
 # Install extension in development mode
 install-extension: build-lsp build-extension
 	@echo "Installing extension in VSCode..."
-	cd vscode-extension && code --install-extension degov-dsl-*.vsix || echo "Build extension first with: make package-extension"
+	cd tools/vscode-extension && code --install-extension degov-dsl-*.vsix || echo "Build extension first with: make package-extension"
 
 # Run tests
 test:
@@ -37,14 +37,14 @@ test:
 # Clean build artifacts
 clean:
 	cargo clean
-	cd vscode-extension && rm -rf node_modules out *.vsix
+	cd tools/vscode-extension && rm -rf node_modules out *.vsix
 
 # Development: Watch for changes
 watch-lsp:
 	cargo watch -x 'build -p degov-lsp'
 
 watch-extension:
-	cd vscode-extension && npm run watch
+	cd tools/vscode-extension && npm run watch
 
 # Help
 help:

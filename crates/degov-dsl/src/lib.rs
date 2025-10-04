@@ -1,14 +1,74 @@
-//! DeGov DSL Parser
+//! DeGov DSL Framework
 //!
-//! A parser for the DeGov KDL DSL that defines government services,
-//! data models, workflows, permissions, and credentials.
+//! A comprehensive framework for building KDL-based domain-specific languages.
+//! This library provides:
 //!
-//! Uses the KDL parser with rich diagnostic error reporting powered by miette.
+//! - **Schema Definition**: Define language structure with Rust types
+//! - **Validation**: Both sync and async validation with custom functions
+//! - **IDE Support**: Semantic analysis, hover, completion, go-to-definition
+//! - **Graph Conversion**: Convert DSL to petgraph for analysis
+//! - **Error Reporting**: Rich diagnostics with miette integration
+//!
+//! # Example
+//!
+//! ```rust,ignore
+//! use degov_dsl::prelude::*;
+//!
+//! // Define your schema
+//! let mut schema = Schema::new("my-dsl");
+//! schema.add_root("definition");
+//! schema.define_node("definition", NodeDef::new()
+//!     .with_description("Root definition node")
+//!     .with_child(ChildDef::new("metadata").required())
+//! );
+//!
+//! // Parse a document
+//! let parser = Parser::new(source, "file.kdl".to_string())
+//!     .with_schema(schema);
+//!
+//! let parsed = parser.parse()?;
+//!
+//! // Access the graph
+//! let graph = &parsed.graph;
+//! let stats = graph.stats();
+//! ```
 
 mod error;
 mod span;
 mod parser;
+mod schema;
+mod validation;
+pub mod semantic;
+pub mod syntax;
 
-pub use span::Spanned;
-pub use parser::{Parser, Definition};
+// v1 schema implementation
+pub mod v1;
+
+// Re-export main types
 pub use error::{DslError, DslDiagnostic, DiagnosticKind, Result};
+pub use span::Spanned;
+pub use schema::{
+    Schema, NodeDef, ArgumentDef, PropertyDef, ValueType, KdlValue,
+    EnumDef, ValidatorDef, TypeValidatorDef, ValidationContext, ValidationError, ValidationResult,
+    CompletionItem, CompletionKind, SchemaModifier,
+};
+pub use validation::{
+    Validator, AsyncValidator, ValidatorRegistry, ValidationPipeline,
+    FnValidator, AsyncFnValidator, builtin,
+};
+pub use semantic::{
+    SemanticInfo, Symbol, SymbolKind, Reference, DocumentSymbol, 
+    HoverInfo, HoverContent, CompletionEngine,
+};
+pub use parser::{Parser, ParsedDocument};
+
+/// Prelude module for convenient imports
+pub mod prelude {
+    pub use crate::{
+        Schema, NodeDef, ArgumentDef, SchemaModifier, PropertyDef, ValueType,
+        EnumDef, ValidatorDef, TypeValidatorDef, CompletionItem, CompletionKind,
+        Parser, ParsedDocument,
+        Validator, AsyncValidator, ValidatorRegistry,
+        Result, DslError,
+    };
+}
