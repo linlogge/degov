@@ -1,4 +1,4 @@
-use connect_rpc::prelude::*;
+use degov_rpc::prelude::*;
 use degov_api::proto::hello::*;
 use std::net::SocketAddr;
 use tokio::time::{sleep, Duration};

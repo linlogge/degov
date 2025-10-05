@@ -1,5 +1,5 @@
 use axum::Router;
-use connect_rpc::{prelude::*};
+use degov_rpc::{prelude::*};
 use proto::hello::*;
 use crate::error::Error;
 

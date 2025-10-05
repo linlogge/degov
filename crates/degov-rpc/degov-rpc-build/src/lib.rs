@@ -57,7 +57,7 @@ impl AxumConnectGenSettings {
     }
 }
 
-pub fn connect_rpc_codegen(settings: AxumConnectGenSettings) -> anyhow::Result<()> {
+pub fn degov_rpc_codegen(settings: AxumConnectGenSettings) -> anyhow::Result<()> {
     // Fetch protoc
     if let Some(version) = &settings.protoc_version {
         let out_dir = env::var("OUT_DIR").unwrap();
@@ -77,7 +77,7 @@ pub fn connect_rpc_codegen(settings: AxumConnectGenSettings) -> anyhow::Result<(
     // Standard prost configuration
     conf.compile_well_known_types();
     conf.file_descriptor_set_path(&descriptor_path);
-    conf.extern_path(".google.protobuf", "::connect_rpc::pbjson_types");
+    conf.extern_path(".google.protobuf", "::degov_rpc::pbjson_types");
     conf.service_generator(Box::new(AxumConnectServiceGenerator::new()));
 
     // Arg configuration
@@ -100,7 +100,7 @@ pub fn connect_rpc_codegen(settings: AxumConnectGenSettings) -> anyhow::Result<(
     let files_c = files.clone();
     let writers = pbjson_build::Builder::new()
         .register_descriptors(&descriptor_set)?
-        .extern_path(".google.protobuf", "::connect_rpc::pbjson_types")
+        .extern_path(".google.protobuf", "::degov_rpc::pbjson_types")
         .generate(&["."], move |package| {
             output.set_file_name(format!("{}.rs", package));
             files_c.deref().borrow_mut().push(output.clone());
@@ -117,9 +117,9 @@ pub fn connect_rpc_codegen(settings: AxumConnectGenSettings) -> anyhow::Result<(
     // Now second part of the nasty hack, replace a few namespaces with re-exported ones.
     for file in files.take().into_iter() {
         let contents = std::fs::read_to_string(&file)?;
-        let contents = contents.replace("pbjson::", "connect_rpc::pbjson::");
-        let contents = contents.replace("prost::", "connect_rpc::prost::");
-        let contents = contents.replace("serde::", "connect_rpc::serde::");
+        let contents = contents.replace("pbjson::", "degov_rpc::pbjson::");
+        let contents = contents.replace("prost::", "degov_rpc::prost::");
+        let contents = contents.replace("serde::", "degov_rpc::serde::");
         std::fs::write(&file, contents)?;
     }
 

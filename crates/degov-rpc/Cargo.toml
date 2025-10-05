@@ -1,5 +1,5 @@
 [package]
-name = "connect-rpc"
+name = "degov-rpc"
 version = "0.5.3"
 authors = ["Alec Thilenius <alec@thilenius.com>"]
 edition = "2021"
@@ -12,7 +12,7 @@ description = "Connect-Web RPC for Axum"
 keywords = ["rpc", "axum", "protobuf", "connect"]
 license = "MIT OR Apache-2.0"
 readme = "../README.md"
-repository = "https://github.com/AThilenius/connect-rpc"
+repository = "https://github.com/AThilenius/degov-rpc"
 
 [dependencies]
 async-trait = "0.1.85"

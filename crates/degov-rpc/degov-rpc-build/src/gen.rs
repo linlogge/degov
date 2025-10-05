@@ -50,18 +50,18 @@ impl AxumConnectServiceGenerator {
                 // Client struct
                 #[derive(Clone)]
                 pub struct #client_name {
-                    client: connect_rpc::client::RpcClient,
+                    client: degov_rpc::client::RpcClient,
                 }
 
                 #[allow(dead_code)]
                 impl #client_name {
-                    pub fn new(client: connect_rpc::client::RpcClient) -> Self {
+                    pub fn new(client: degov_rpc::client::RpcClient) -> Self {
                         Self { client }
                     }
 
-                    pub fn from_config(config: connect_rpc::client::RpcClientConfig) -> Self {
+                    pub fn from_config(config: degov_rpc::client::RpcClientConfig) -> Self {
                         Self {
-                            client: connect_rpc::client::RpcClient::new(config),
+                            client: degov_rpc::client::RpcClient::new(config),
                         }
                     }
 
@@ -84,9 +84,9 @@ impl AxumConnectServiceGenerator {
             quote! {
                 pub fn #method_name<T, H, S>(
                     handler: H
-                ) -> impl FnOnce(axum::Router<S>) -> connect_rpc::server::router::RpcRouter<S>
+                ) -> impl FnOnce(axum::Router<S>) -> degov_rpc::server::router::RpcRouter<S>
                 where
-                    H: connect_rpc::server::handler::RpcHandlerStream<#input_type, #output_type, T, S>,
+                    H: degov_rpc::server::handler::RpcHandlerStream<#input_type, #output_type, T, S>,
                     T: 'static,
                     S: Clone + Send + Sync + 'static,
                 {
@@ -107,9 +107,9 @@ impl AxumConnectServiceGenerator {
             quote! {
                 pub fn #method_name<T, H, S>(
                     handler: H
-                ) -> impl FnOnce(axum::Router<S>) -> connect_rpc::server::router::RpcRouter<S>
+                ) -> impl FnOnce(axum::Router<S>) -> degov_rpc::server::router::RpcRouter<S>
                 where
-                    H: connect_rpc::server::handler::RpcHandlerUnary<#input_type, #output_type, T, S>,
+                    H: degov_rpc::server::handler::RpcHandlerUnary<#input_type, #output_type, T, S>,
                     T: 'static,
                     S: Clone + Send + Sync + 'static,
                 {
@@ -128,9 +128,9 @@ impl AxumConnectServiceGenerator {
 
                 pub fn #method_name_unary_get<T, H, S>(
                     handler: H
-                ) -> impl FnOnce(axum::Router<S>) -> connect_rpc::server::router::RpcRouter<S>
+                ) -> impl FnOnce(axum::Router<S>) -> degov_rpc::server::router::RpcRouter<S>
                 where
-                    H: connect_rpc::server::handler::RpcHandlerUnary<#input_type, #output_type, T, S>,
+                    H: degov_rpc::server::handler::RpcHandlerUnary<#input_type, #output_type, T, S>,
                     T: 'static,
                     S: Clone + Send + Sync + 'static,
                 {
@@ -162,7 +162,7 @@ impl AxumConnectServiceGenerator {
                 pub async fn #method_name(
                     &self,
                     request: #input_type,
-                ) -> Result<connect_rpc::client::RpcStream<#output_type>, connect_rpc::server::error::RpcError> {
+                ) -> Result<degov_rpc::client::RpcStream<#output_type>, degov_rpc::server::error::RpcError> {
                     self.client.server_stream(#path, request).await
                 }
             }
@@ -171,14 +171,14 @@ impl AxumConnectServiceGenerator {
                 pub async fn #method_name(
                     &self,
                     request: #input_type,
-                ) -> Result<#output_type, connect_rpc::server::error::RpcError> {
+                ) -> Result<#output_type, degov_rpc::server::error::RpcError> {
                     self.client.unary(#path, request).await
                 }
 
                 pub async fn #method_name_get(
                     &self,
                     request: #input_type,
-                ) -> Result<#output_type, connect_rpc::server::error::RpcError> {
+                ) -> Result<#output_type, degov_rpc::server::error::RpcError> {
                     self.client.unary_get(#path, request).await
                 }
             }

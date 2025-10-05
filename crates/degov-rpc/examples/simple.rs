@@ -1,6 +1,6 @@
 use axum::Router;
-use connect_rpc::prelude::*;
-use connect_rpc::server::handler::{RpcHandlerStream, RpcHandlerUnary};
+use degov_rpc::prelude::*;
+use degov_rpc::server::handler::{RpcHandlerStream, RpcHandlerUnary};
 use futures::{stream, StreamExt};
 use prost::Message;
 use serde::{Deserialize, Serialize};
