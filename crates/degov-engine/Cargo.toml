@@ -4,12 +4,12 @@ version.workspace = true
 edition.workspace = true
 
 [[example]]
-name = "simple"
-path = "examples/simple.rs"
+name = "distributed_workflow"
+path = "examples/distributed_workflow.rs"
 
 [[example]]
-name = "database"
-path = "examples/database.rs"
+name = "test_console"
+path = "examples/test_console.rs"
 
 [dependencies]
 tokio = { workspace = true, features = ["full"] }
@@ -20,6 +20,12 @@ tracing = "0.1"
 parking_lot = "0.12"
 deno_core = "^0.355.0"
 rustyscript = { git = "https://github.com/linlogge/rustyscript", branch = "master", features = ["worker", "console", "url", "crypto", "web"] }
+degov-storage = { path = "../degov-storage" }
+foundationdb = { version = "0.9.2", features = ["fdb-7_3"] }
+uuid = { version = "1.11", features = ["v4"] }
+chrono = "0.4"
+hostname = "0.4"
+async-trait = "0.1"
 
 [dev-dependencies]
 tracing-subscriber = "0.3"

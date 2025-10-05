@@ -1,97 +1,181 @@
-use bytes::{Buf, BufMut, Bytes, BytesMut};
-use futures_util::{stream, Stream, StreamExt, TryStream, TryStreamExt};
-use http_body::Body;
-use http_body_util::BodyExt;
+use futures::{Stream, StreamExt};
+use prost::Message;
+use reqwest::Response as ReqwestResponse;
+use serde::de::DeserializeOwned;
+use serde::Deserialize;
+use std::pin::Pin;
+use std::task::{Context, Poll};
 
-use super::{BoxError, Error};
+use crate::server::error::{RpcError, RpcErrorCode};
 
-pub struct ConnectFrame {
-    pub compressed: bool,
-    pub end: bool,
-    pub data: Bytes,
+/// Stream of RPC messages
+pub struct RpcStream<TRes> {
+    inner: Pin<Box<dyn Stream<Item = Result<TRes, RpcError>> + Send>>,
 }
 
-const FLAGS_COMPRESSED: u8 = 0b1;
-const FLAGS_END: u8 = 0b01;
-
-impl ConnectFrame {
-    pub fn body_stream<B>(body: B) -> impl Stream<Item = Result<Self, Error>>
-    where
-        B: Body<Error: Into<BoxError>>,
-    {
-        Self::bytes_stream(body.into_data_stream())
-    }
-
-    pub fn bytes_stream<S>(s: S) -> impl Stream<Item = Result<Self, Error>>
-    where
-        S: TryStream<Ok: Buf, Error: Into<BoxError>>,
-    {
-        let mut parse_state = FrameParseState::default();
-        s.map_err(Error::body)
-            .map(Some)
-            .chain(stream::iter([None]))
-            .flat_map(move |item| stream::iter(parse_state.feed(item)))
-    }
-}
-
-#[derive(Default)]
-struct FrameParseState {
-    buf: BytesMut,
-    failed: bool,
-}
-
-impl FrameParseState {
-    fn feed(&mut self, item: Option<Result<impl Buf, Error>>) -> Vec<Result<ConnectFrame, Error>> {
-        if self.failed {
-            return vec![];
+impl<TRes> RpcStream<TRes> {
+    pub fn new(stream: impl Stream<Item = Result<TRes, RpcError>> + Send + 'static) -> Self {
+        Self {
+            inner: Box::pin(stream),
         }
-        let data = match item {
-            Some(Ok(data)) => data,
-            Some(Err(err)) => {
-                self.failed = true;
-                return vec![Err(Error::body(err))];
+    }
+}
+
+impl<TRes> Stream for RpcStream<TRes> {
+    type Item = Result<TRes, RpcError>;
+
+    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+        self.inner.as_mut().poll_next(cx)
+    }
+}
+
+#[derive(Deserialize)]
+struct EndOfStream {
+    error: Option<RpcError>,
+}
+
+/// Parse a streaming response from the server
+pub async fn parse_streaming_response<TRes>(
+    response: ReqwestResponse,
+    use_binary: bool,
+) -> Result<RpcStream<TRes>, RpcError>
+where
+    TRes: Message + DeserializeOwned + Default + Send + 'static,
+{
+    let status = response.status();
+
+    // Streaming responses should always be 200 OK
+    if !status.is_success() {
+        return Err(RpcError::new(
+            RpcErrorCode::Unknown,
+            format!("Streaming request failed with status: {}", status),
+        ));
+    }
+
+    let byte_stream = response.bytes_stream();
+
+    // Use unfold to maintain state and parse messages
+    let message_stream = futures::stream::unfold(
+        (byte_stream, Vec::<u8>::new(), false),
+        move |(mut stream, mut buffer, ended)| async move {
+            if ended {
+                return None;
             }
-            None => {
-                if !self.buf.is_empty() {
-                    return vec![Err(Error::body("partial frame at end of stream"))];
+
+            loop {
+                // Try to parse from existing buffer
+                match try_parse_envelope::<TRes>(&mut buffer, use_binary) {
+                    Ok(ParseResult::Message(msg)) => {
+                        return Some((Ok(msg), (stream, buffer, false)));
+                    }
+                    Ok(ParseResult::EndOfStream(eos)) => {
+                        if let Some(error) = eos.error {
+                            return Some((Err(error), (stream, buffer, true)));
+                        } else {
+                            return None; // Clean end of stream
+                        }
+                    }
+                    Ok(ParseResult::Incomplete) => {
+                        // Need more data, read from stream
+                        match stream.next().await {
+                            Some(Ok(chunk)) => {
+                                buffer.extend_from_slice(&chunk);
+                                // Continue loop to try parsing again
+                            }
+                            Some(Err(e)) => {
+                                let error = RpcError::new(
+                                    RpcErrorCode::Internal,
+                                    format!("Failed to read chunk: {}", e),
+                                );
+                                return Some((Err(error), (stream, buffer, true)));
+                            }
+                            None => {
+                                // Stream ended without proper closing
+                                if !buffer.is_empty() {
+                                    let error = RpcError::new(
+                                        RpcErrorCode::Internal,
+                                        "Stream ended with incomplete message".to_string(),
+                                    );
+                                    return Some((Err(error), (stream, buffer, true)));
+                                }
+                                return None;
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        return Some((Err(e), (stream, buffer, true)));
+                    }
                 }
-                return vec![];
             }
-        };
+        },
+    );
 
-        self.buf.put(data);
+    Ok(RpcStream::new(message_stream))
+}
 
-        let mut frames = vec![];
-        loop {
-            match self.parse_frame() {
-                Ok(Some(frame)) => frames.push(Ok(frame)),
-                Ok(None) => return frames,
-                Err(err) => {
-                    self.failed = true;
-                    frames.push(Err(err));
-                }
-            }
-        }
+enum ParseResult<T> {
+    Message(T),
+    EndOfStream(EndOfStream),
+    Incomplete,
+}
+
+/// Try to parse an enveloped message from the buffer
+/// Envelope format: [flags: u8][length: u32 BE][payload: bytes]
+fn try_parse_envelope<TRes>(
+    buffer: &mut Vec<u8>,
+    use_binary: bool,
+) -> Result<ParseResult<TRes>, RpcError>
+where
+    TRes: Message + DeserializeOwned + Default,
+{
+    // Need at least 5 bytes for envelope header
+    if buffer.len() < 5 {
+        return Ok(ParseResult::Incomplete);
     }
 
-    fn parse_frame(&mut self) -> Result<Option<ConnectFrame>, Error> {
-        if self.buf.len() < 5 {
-            return Ok(None);
-        }
-        let data_len = (&self.buf[1..]).get_u32();
-        let Ok(frame_len) = ((data_len as u64) + 5).try_into() else {
-            return Err(Error::body("frame too large"));
-        };
-        if self.buf.len() < frame_len {
-            return Ok(None);
-        }
-        let mut frame = self.buf.split_to(frame_len);
-        let data = frame.split_off(5).freeze();
-        let flags = frame[0];
-        Ok(Some(ConnectFrame {
-            compressed: flags & FLAGS_COMPRESSED != 0,
-            end: flags & FLAGS_END != 0,
-            data,
-        }))
+    let flags = buffer[0];
+    let length = u32::from_be_bytes([buffer[1], buffer[2], buffer[3], buffer[4]]) as usize;
+
+    // Check if we have the full message
+    if buffer.len() < 5 + length {
+        return Ok(ParseResult::Incomplete);
     }
+
+    // Extract the message payload (clone to avoid borrow issues)
+    let payload = buffer[5..5 + length].to_vec();
+
+    // Remove the parsed envelope from the buffer
+    *buffer = buffer[5 + length..].to_vec();
+
+    // Check flags to determine message type
+    // 0x00 = message, 0x02 = end of stream
+    if flags == 0x02 {
+        // End of stream
+        let eos: EndOfStream = serde_json::from_slice(&payload).map_err(|e| {
+            RpcError::new(
+                RpcErrorCode::Internal,
+                format!("Failed to parse end-of-stream: {}", e),
+            )
+        })?;
+        return Ok(ParseResult::EndOfStream(eos));
+    }
+
+    // Parse the message
+    let message = if use_binary {
+        TRes::decode(&payload[..]).map_err(|e| {
+            RpcError::new(
+                RpcErrorCode::Internal,
+                format!("Failed to decode binary protobuf: {}", e),
+            )
+        })?
+    } else {
+        serde_json::from_slice(&payload).map_err(|e| {
+            RpcError::new(
+                RpcErrorCode::Internal,
+                format!("Failed to decode JSON: {}", e),
+            )
+        })?
+    };
+
+    Ok(ParseResult::Message(message))
 }

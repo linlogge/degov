@@ -2,7 +2,7 @@ use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
 };
-use connect_rpc::error::{RpcError, RpcErrorCode, RpcIntoError};
+use connect_rpc::server::error::{RpcError, RpcErrorCode, RpcIntoError};
 
 // This is an example Error type, to demo impls needed for `connect-rpc`. It uses `thiserror` to
 // wrap various error types as syntactic sugar, but you could just as easily write this out by hand.

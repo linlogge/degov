@@ -1,0 +1,47 @@
+id "de.berlin/business"
+
+definition {
+    kind "DataModel"
+    
+    model {
+        string "id" {
+            name "Id"
+            description ""
+        }
+    }
+}
+
+definition "register-business" {
+    kind "Workflow"
+    
+    workflow {
+        states {
+            state "draft" {
+                description "Citizen is filling out the application"
+            }
+            state "pending-review" {
+                description "Application is awaiting review by authority staff"
+            }
+            state "changes-requested" {
+                description "Authority has requested changes to the application"
+            }
+            state "approved" {
+                description "Application has been approved"
+            }
+        }
+        transitions {
+            transition "submit" {
+                from "draft"
+                to "pending-review"
+            }
+            transition "request-changes" {
+                from "pending-review"
+                to "changes-requested"
+            }
+            transition "approve" {
+                from "changes-requested"
+                to "approved"
+            }
+        }
+    }
+}

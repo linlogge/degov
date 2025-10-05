@@ -1,0 +1,69 @@
+{
+  "name": "@degov/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./button": "./src/components/button.tsx",
+    "./sidebar": "./src/components/sidebar.tsx",
+    "./separator": "./src/components/separator.tsx",
+    "./avatar": "./src/components/avatar.tsx",
+    "./badge": "./src/components/badge.tsx",
+    "./checkbox": "./src/components/checkbox.tsx",
+    "./drawer": "./src/components/drawer.tsx",
+    "./dropdown-menu": "./src/components/dropdown-menu.tsx",
+    "./input": "./src/components/input.tsx",
+    "./label": "./src/components/label.tsx",
+    "./select": "./src/components/select.tsx",
+    "./tabs": "./src/components/tabs.tsx",
+    "./table": "./src/components/table.tsx",
+    "./lib/utils": "./src/lib/utils.ts",
+    "./styles.css": "./src/styles.css",
+    "./icons": "./src/icons.ts",
+    "./hooks/use-mobile": "./src/hooks/use-mobile.ts"
+  },
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/modifiers": "^9.0.0",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-checkbox": "^1.3.3",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tabs": "^1.1.13",
+    "@radix-ui/react-tooltip": "^1.2.8",
+    "@tabler/icons-react": "^3.35.0",
+    "@tanstack/react-table": "^8.21.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.544.0",
+    "react-table": "^7.8.0",
+    "recharts": "^3.2.1",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^2.5.5",
+    "tailwindcss": "^4.0.6",
+    "tw-animate-css": "^1.4.0",
+    "vaul": "^1.1.2",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "react": "^19.0.0",
+    "typescript": "^5.7.2"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}

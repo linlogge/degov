@@ -1,9 +1,20 @@
-pub mod engine;
-pub mod error;
-pub mod runtime;
-pub mod workflow;
+//! DeGov Workflow Engine
+//!
+//! A distributed workflow engine built on FoundationDB with support for:
+//! - Atomic state transitions with ACID guarantees
+//! - Distributed task execution with horizontal scaling
+//! - Worker coordination with lease-based locking
+//! - Event logging for audit trails
+//! - Idempotent task execution
+//! - Compensation/rollback support
 
-pub use engine::{WorkflowEngine, WorkflowEvent};
+mod engine;
+mod error;
+mod executers;
+mod model;
+mod storage;
+
+pub use engine::WorkflowEngine;
 pub use error::{EngineError, Result};
-pub use runtime::{DenoRuntime, ScriptResult};
-pub use workflow::{ExecutionState, Step, StepResult, StepType, Workflow, WorkflowExecution};
+pub use executers::deno::DenoRuntime;
+pub use model::*;

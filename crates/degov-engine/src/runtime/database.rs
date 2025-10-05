@@ -29,6 +29,7 @@ impl KvStore {
         }
     }
 
+    #[allow(dead_code)]
     pub fn size(&self) -> usize {
         self.data.read().map(|d| d.len()).unwrap_or(0)
     }
