@@ -1,0 +1,33 @@
+# Target directories
+target/
+**/target/
+
+# Node modules and frontend
+node_modules/
+**/node_modules/
+apps/
+packages/
+tools/
+
+# FoundationDB data
+fdb-data/
+fdb-config/
+
+# Services
+services/
+
+# Documentation and git
+*.md
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.log
+tmp/
+
