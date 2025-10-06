@@ -1,12 +1,10 @@
 use axum::Router;
-use degov_rpc::{prelude::*};
-use proto::hello::*;
-use crate::error::Error;
+use degov_rpc::prelude::RpcRouterExt;
 
-pub mod proto {
-    pub mod hello {
-        include!(concat!(env!("OUT_DIR"), "/hello.rs"));
-    }
+use crate::{hello::types::{HelloRequest, HelloResponse, HelloWorldService}, Error};
+
+pub mod types {
+    include!(concat!(env!("OUT_DIR"), "/hello.rs"));
 }
 
 pub fn add_routes(router: Router) -> Router {

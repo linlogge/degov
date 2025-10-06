@@ -1,5 +1,5 @@
 use degov_rpc::prelude::*;
-use degov_api::proto::hello::*;
+use degov_api::hello::types::*;
 use std::net::SocketAddr;
 use tokio::time::{sleep, Duration};
 
@@ -86,7 +86,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     run_client().await;
     
     // Give a moment before exiting
-    sleep(Duration::from_secs(1)).await;
+    sleep(Duration::from_secs(100)).await;
     
     Ok(())
 }

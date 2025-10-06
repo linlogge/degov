@@ -1,11 +1,9 @@
 use axum::Router;
 use tower_http::cors::CorsLayer;
 
-mod hello;
 mod error;
-pub mod client;
+pub mod hello;
 
-pub use hello::*;
 pub use error::Error;
 
 pub async fn start_server() {

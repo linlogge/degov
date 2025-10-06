@@ -25,7 +25,8 @@
     "react-dom": "^19.0.0",
     "sonner": "^2.0.7",
     "tailwindcss": "^4.0.6",
-    "zod": "^4.1.11"
+    "zod": "^4.1.11",
+    "@degov/sdk": "workspace:*"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
