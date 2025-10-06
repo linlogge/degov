@@ -24,10 +24,10 @@ RUN ARCH=$(dpkg --print-architecture) && \
 WORKDIR /build
 
 # Copy workspace configuration files
-COPY Cargo.toml Cargo.lock ./
+COPY ../../Cargo.toml ../../Cargo.lock ./
 
 # Copy all crates (since degov-cli depends on workspace crates)
-COPY crates/ ./crates/
+COPY ../../crates/ ./crates/
 
 # Build the application in release mode
 RUN cargo build --release --package degov-cli
