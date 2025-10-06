@@ -9,6 +9,9 @@ apps/
 packages/
 tools/
 
+# Keep crates directory for Rust builds
+!crates/
+
 # FoundationDB data
 fdb-data/
 fdb-config/

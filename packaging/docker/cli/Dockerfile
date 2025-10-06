@@ -36,7 +36,7 @@ RUN cargo build --release --package degov-cli
 FROM debian:bookworm-slim
 
 # FoundationDB version (must match builder)
-ARG FDB_VERSION=7.3.43
+ARG FDB_VERSION=7.3.69
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y \

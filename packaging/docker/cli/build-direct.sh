@@ -27,9 +27,10 @@ echo -e "${YELLOW}Project root: ${PROJECT_ROOT}${NC}"
 echo -e "${YELLOW}Building image: ${IMAGE_NAME}:${IMAGE_TAG}${NC}"
 echo -e "${YELLOW}FoundationDB version: ${FDB_VERSION}${NC}"
 
-# Build the Docker image from the CLI directory
-cd "$SCRIPT_DIR"
+# Build the Docker image from the project root (like original build script)
+cd "$PROJECT_ROOT"
 docker build \
+    -f packaging/docker/cli/Dockerfile \
     --build-arg FDB_VERSION="${FDB_VERSION}" \
     -t "${IMAGE_NAME}:${IMAGE_TAG}" \
     .
