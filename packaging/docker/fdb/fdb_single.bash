@@ -92,7 +92,7 @@ function create_server_environment() {
 function start_fdb () {
     create_server_environment
     source /var/fdb/.fdbenv
-    echo "Starting FDB server on $FORMATTED_PUBLIC_IP:$FDB_PORT"
+    echo "Starting FDB server (modified) on $FORMATTED_PUBLIC_IP:$FDB_PORT"
     fdbserver --listen-address 0.0.0.0:"$FDB_PORT" \
               --public-address "$FORMATTED_PUBLIC_IP:$FDB_PORT" \
               --datadir /var/fdb/data \
