@@ -60,17 +60,26 @@ function create_server_environment() {
     if [[ "$FDB_NETWORKING_MODE" == "host" ]]; then
         public_ip=127.0.0.1
     elif [[ "$FDB_NETWORKING_MODE" == "container" ]]; then
+        # Get the first IP address, handling both IPv4 and IPv6
         public_ip=$(hostname -i | awk '{print $1}')
+        
+        # Remove any interface suffix like %eth0 from IPv6 addresses
+        public_ip="${public_ip%%%*}"
     else
         echo "Unknown FDB Networking mode \"$FDB_NETWORKING_MODE\"" 1>&2
         exit 1
     fi
 
-    echo "export PUBLIC_IP=$public_ip" > $env_file
-    
     # Format IP for use with port
     formatted_public_ip=$(format_ip_for_port "$public_ip")
-    echo "export FORMATTED_PUBLIC_IP=$formatted_public_ip" >> $env_file
+    
+    # Debug output
+    echo "DEBUG: Raw IP: $public_ip"
+    echo "DEBUG: Formatted IP: $formatted_public_ip"
+    
+    # Write to env file with proper quoting
+    echo "export PUBLIC_IP='$public_ip'" > $env_file
+    echo "export FORMATTED_PUBLIC_IP='$formatted_public_ip'" >> $env_file
     
     if [[ -z $FDB_COORDINATOR && -z "$FDB_CLUSTER_FILE_CONTENTS" ]]; then
         FDB_CLUSTER_FILE_CONTENTS="docker:docker@$formatted_public_ip:$FDB_PORT"
