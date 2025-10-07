@@ -5,3 +5,6 @@ plugins:
     # Also generate any imported dependencies
     include_imports: true
     opt: target=ts
+  - local: protoc-gen-connect-query
+    out: packages/sdk/gen
+    opt: target=ts
