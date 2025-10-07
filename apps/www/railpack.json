@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.railpack.com",
+    "steps": {
+        "install": {
+            "commands": [
+                "pnpm install"
+            ]
+        },
+        "build": {
+            "inputs": [
+                {
+                    "step": "install"
+                }
+            ],
+            "commands": [
+                "pnpm build"
+            ]
+        }
+    },
+    "deploy": {
+        "startCommand": "pnpm start"
+    }
+}

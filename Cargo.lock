@@ -1536,6 +1536,7 @@ dependencies = [
  "async-stream",
  "axum 0.8.6",
  "axum-extra",
+ "degov-engine",
  "degov-rpc",
  "degov-rpc-build",
  "prost",

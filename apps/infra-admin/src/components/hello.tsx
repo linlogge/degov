@@ -1,4 +1,4 @@
-import { HelloWorldService, type HelloRequest, HelloRequestSchema } from "@degov/sdk/pb/hello_pb";
+import { HelloWorldService } from "@degov/sdk/pb/hello_pb";
 import { useQuery } from "@degov/sdk/query";
 import { useState } from "react";
 

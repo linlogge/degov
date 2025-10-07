@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package engine;
+
+service EngineService {
+  rpc ListWorkflows(ListWorkflowsRequest) returns (ListWorkflowsResponse);
+}
+
+message ListWorkflowsRequest {}
+
+message ListWorkflowsResponse {
+  repeated Workflow workflows = 1;
+}
+
+message Workflow {
+  string id = 1;
+  string name = 2;
+}
