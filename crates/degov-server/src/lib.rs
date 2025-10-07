@@ -1,7 +1,7 @@
 use degov_core::did::DIDBuf;
-use degov_storage::{boot, Database, MerkleSearchTree};
+use degov_storage::boot;
 use axum::Router;
-use tower_http::{cors::CorsLayer, services::ServeDir};
+use tower_http::{cors::CorsLayer, services::{ServeDir, ServeFile}};
 
 pub struct Server {
     did: DIDBuf,
@@ -46,9 +46,17 @@ impl Server {
 }
 
 fn add_infra_admin_routes(mut app: Router) -> Router {
-    let static_files = ServeDir::new("./apps/infra-admin/dist");
-
-    app = app.nest_service("/admin", static_files);
+    let spa_path = "./apps/infra-admin/dist";
+    
+    // Create a ServeDir with fallback to index.html for SPA routing
+    // This follows the pattern from the example: using_serve_dir_with_assets_fallback
+    let serve_dir = ServeDir::new(spa_path)
+        .not_found_service(ServeFile::new(format!("{}/index.html", spa_path)));
+    
+    // Mount the SPA service at /admin with fallback
+    app = app.nest_service("/admin", serve_dir.clone())
+             .fallback_service(serve_dir);
 
     app
 }
+
