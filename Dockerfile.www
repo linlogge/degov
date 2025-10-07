@@ -40,8 +40,10 @@ RUN pnpm install --frozen-lockfile --prod
 # Copy built application from build stage
 COPY --from=base /app/apps/www/.next ./apps/www/.next
 COPY --from=base /app/apps/www/public ./apps/www/public
-COPY --from=base /app/apps/www/next.config.ts ./apps/www/
 COPY --from=base /app/apps/www/app ./apps/www/app
+
+# Create a JavaScript version of next.config to avoid TypeScript dependency
+RUN echo "module.exports = {};" > ./apps/www/next.config.js
 
 # Expose port
 EXPOSE 3000
