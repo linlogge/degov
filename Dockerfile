@@ -18,7 +18,7 @@ RUN pnpm install --frozen-lockfile
 
 # Build the React application
 WORKDIR /build/apps/infra-admin
-RUN pnpm build
+RUN pnpm --filter=infra-admin build --base=/admin/
 
 # Stage 2: Build the Rust application
 FROM rust:1.90-bookworm AS rust-builder

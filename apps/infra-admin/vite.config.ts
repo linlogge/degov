@@ -14,9 +14,13 @@ export default defineConfig({
     viteReact(),
     tailwindcss(),
   ],
-  test: {
-    globals: true,
-    environment: 'jsdom',
+  server: {
+    proxy: {
+      '/rpc': {
+        target: 'http://localhost:3030',
+        changeOrigin: true,
+      },
+    }
   },
   resolve: {
     alias: {
