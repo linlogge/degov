@@ -11,7 +11,7 @@ use axum_extra::extract::Host;
 use prost::Message;
 use serde::de::DeserializeOwned;
 
-use super::error::{RpcError, RpcErrorCode, RpcIntoError};
+use crate::error::{RpcError, RpcErrorCode, RpcIntoError};
 
 #[async_trait]
 pub trait RpcFromRequestParts<T, S>: Sized

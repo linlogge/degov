@@ -9,7 +9,7 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 
 use crate::server::parts::RpcFromRequestParts;
-use crate::server::response::RpcIntoResponse;
+use crate::error::RpcIntoResponse;
 
 use super::codec::{
     decode_check_headers, decode_check_query, decode_request_payload,
@@ -54,14 +54,14 @@ macro_rules! impl_handler {
                 Box::pin(async move {
                     let (mut parts, body) = req.into_parts();
 
-                    let ReqResInto { binary } = if parts.method == Method::GET {
+                    let ReqResInto { encoding } = if parts.method == Method::GET {
                         match decode_check_query(&parts) {
-                            Ok(binary) => binary,
+                            Ok(encoding) => encoding,
                             Err(e) => return e,
                         }
                     } else {
                         match decode_check_headers(&mut parts, false) {
-                            Ok(binary) => binary,
+                            Ok(encoding) => encoding,
                             Err(e) => return e,
                         }
                     };
@@ -72,27 +72,27 @@ macro_rules! impl_handler {
                         let $ty = match $ty::rpc_from_request_parts(&mut parts, state).await {
                             Ok(value) => value,
                             Err(error) => {
-                                return ResponseEncoder::error(error, false, binary).encode_response();
+                                return ResponseEncoder::error(error, false, encoding).encode_response();
                             }
                         };
                     )*
 
                     let proto_req: TMReq = if parts.method == Method::GET {
-                        match decode_request_payload_from_query(&parts, state, binary) {
+                        match decode_request_payload_from_query(&parts, state, encoding) {
                             Ok(value) => value,
                             Err(e) => return e,
                         }
                     } else {
                         let req = Request::from_parts(parts, body);
 
-                        match decode_request_payload(req, state, binary, false).await {
+                        match decode_request_payload(req, state, encoding, false).await {
                             Ok(value) => value,
                             Err(e) => return e,
                         }
                     };
 
                     let response = self($($ty,)* proto_req).await;
-                    ResponseEncoder::<TMRes>::unary(response, binary).encode_response()
+                    ResponseEncoder::<TMRes>::unary(response, encoding).encode_response()
                 })
             }
         }

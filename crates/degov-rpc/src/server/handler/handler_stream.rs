@@ -9,7 +9,7 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 
 use crate::server::parts::RpcFromRequestParts;
-use crate::server::response::RpcIntoResponse;
+use crate::error::RpcIntoResponse;
 
 use super::codec::{decode_check_headers, decode_request_payload, ReqResInto, ResponseEncoder};
 
@@ -51,8 +51,8 @@ macro_rules! impl_handler {
                 Box::pin(async move {
                     let (mut parts, body) = req.into_parts();
 
-                    let ReqResInto { binary } = match decode_check_headers(&mut parts, true) {
-                        Ok(binary) => binary,
+                    let ReqResInto { encoding } = match decode_check_headers(&mut parts, true) {
+                        Ok(encoding) => encoding,
                         Err(e) => return e,
                     };
 
@@ -62,21 +62,21 @@ macro_rules! impl_handler {
                     let $ty = match $ty::rpc_from_request_parts(&mut parts, state).await {
                         Ok(value) => value,
                         Err(error) => {
-                            return ResponseEncoder::error(error, true, binary).encode_response();
+                            return ResponseEncoder::error(error, true, encoding).encode_response();
                         }
                     };
                     )*
 
                     let req = Request::from_parts(parts, body);
 
-                    let proto_req: TMReq = match decode_request_payload(req, state, binary, true).await {
+                    let proto_req: TMReq = match decode_request_payload(req, state, encoding, true).await {
                         Ok(value) => value,
                         Err(e) => return e,
                     };
 
                     // TODO: Support returning trailers (they would need to bundle in the error type).
                     let mut stream = self($($ty,)* proto_req).await.map(RpcIntoResponse::rpc_into_response);
-                    ResponseEncoder::<TMRes>::stream(stream.boxed(), binary).encode_response()
+                    ResponseEncoder::<TMRes>::stream(stream.boxed(), encoding).encode_response()
                 })
             }
         }

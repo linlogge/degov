@@ -1,16 +1,16 @@
-use base64::{engine::general_purpose, Engine as _};
 use prost::Message;
 use reqwest::{Client, Method, Request, Url};
 use serde::Serialize;
 use std::time::Duration;
 
-use crate::server::error::{RpcError, RpcErrorCode};
+use crate::error::{RpcError, RpcErrorCode};
+use crate::encoding::{Encoding, encode_message, encode_for_get};
 
 /// Builder for RPC requests
 pub struct RpcRequest<TReq> {
     url: Url,
     message: TReq,
-    use_binary: bool,
+    encoding: Encoding,
     timeout_ms: Option<u64>,
 }
 
@@ -22,7 +22,7 @@ where
         base_url: Url,
         service_path: &str,
         message: TReq,
-        use_binary: bool,
+        encoding: Encoding,
         timeout_ms: Option<u64>,
     ) -> Result<Self, RpcError> {
         let url = base_url.join(service_path).map_err(|e| {
@@ -35,7 +35,7 @@ where
         Ok(Self {
             url,
             message,
-            use_binary,
+            encoding,
             timeout_ms,
         })
     }
@@ -55,17 +55,8 @@ where
         }
 
         // Encode the message
-        let (content_type, body) = if self.use_binary {
-            ("application/proto", self.message.encode_to_vec())
-        } else {
-            let json = serde_json::to_vec(&self.message).map_err(|e| {
-                RpcError::new(
-                    RpcErrorCode::Internal,
-                    format!("Failed to serialize request: {}", e),
-                )
-            })?;
-            ("application/json", json)
-        };
+        let body = encode_message(&self.message, self.encoding)?;
+        let content_type = self.encoding.content_type(false);
 
         request = request.header("content-type", content_type).body(body);
 
@@ -79,28 +70,19 @@ where
 
     /// Build a unary GET request
     pub fn build_unary_get(self, client: &Client) -> Result<Request, RpcError> {
-        let encoding = if self.use_binary { "proto" } else { "json" };
-
-        // Encode the message
-        let message_bytes = if self.use_binary {
-            self.message.encode_to_vec()
-        } else {
-            serde_json::to_vec(&self.message).map_err(|e| {
-                RpcError::new(
-                    RpcErrorCode::Internal,
-                    format!("Failed to serialize request: {}", e),
-                )
-            })?
+        let encoding_str = match self.encoding {
+            Encoding::Json => "json",
+            Encoding::Proto => "proto",
         };
 
-        // Base64 encode the message for URL safety
-        let message_b64 = general_purpose::URL_SAFE.encode(&message_bytes);
+        // Encode the message
+        let message_b64 = encode_for_get(&self.message, self.encoding)?;
 
         // Build query parameters
         let mut url = self.url.clone();
         url.query_pairs_mut()
             .append_pair("message", &message_b64)
-            .append_pair("encoding", encoding)
+            .append_pair("encoding", encoding_str)
             .append_pair("base64", "1");
 
         if let Some(timeout_ms) = self.timeout_ms {
@@ -143,29 +125,8 @@ where
         }
 
         // Encode the message with envelope
-        let (content_type, body) = if self.use_binary {
-            let mut envelope = vec![0x00, 0, 0, 0, 0]; // flags=0, length placeholder
-            self.message.encode(&mut envelope).map_err(|e| {
-                RpcError::new(
-                    RpcErrorCode::Internal,
-                    format!("Failed to encode request: {}", e),
-                )
-            })?;
-            let length = (envelope.len() - 5) as u32;
-            envelope[1..5].copy_from_slice(&length.to_be_bytes());
-            ("application/connect+proto", envelope)
-        } else {
-            let mut envelope = vec![0x00, 0, 0, 0, 0]; // flags=0, length placeholder
-            serde_json::to_writer(&mut envelope, &self.message).map_err(|e| {
-                RpcError::new(
-                    RpcErrorCode::Internal,
-                    format!("Failed to serialize request: {}", e),
-                )
-            })?;
-            let length = (envelope.len() - 5) as u32;
-            envelope[1..5].copy_from_slice(&length.to_be_bytes());
-            ("application/connect+json", envelope)
-        };
+        let body = crate::encoding::encode_envelope(&self.message, self.encoding)?;
+        let content_type = self.encoding.content_type(true);
 
         request = request.header("content-type", content_type).body(body);
 

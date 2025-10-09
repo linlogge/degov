@@ -7,15 +7,16 @@ use std::sync::Arc;
 use super::request::RpcRequest;
 use super::response::RpcResponse;
 use super::stream::{parse_streaming_response, RpcStream};
-use crate::server::error::{RpcError, RpcErrorCode};
+use crate::error::{RpcError, RpcErrorCode};
+use crate::encoding::Encoding;
 
 /// Configuration for the RPC client
 #[derive(Clone, Debug)]
 pub struct RpcClientConfig {
     /// Base URL for the RPC server
     pub base_url: Url,
-    /// Whether to use binary protobuf encoding (true) or JSON (false)
-    pub use_binary: bool,
+    /// Encoding format for the RPC client
+    pub encoding: Encoding,
     /// Optional timeout in milliseconds
     pub timeout_ms: Option<u64>,
 }
@@ -31,13 +32,18 @@ impl RpcClientConfig {
 
         Ok(Self {
             base_url: url,
-            use_binary: false,
+            encoding: Encoding::Json,
             timeout_ms: None,
         })
     }
 
+    pub fn with_encoding(mut self, encoding: Encoding) -> Self {
+        self.encoding = encoding;
+        self
+    }
+
     pub fn with_binary(mut self, use_binary: bool) -> Self {
-        self.use_binary = use_binary;
+        self.encoding = if use_binary { Encoding::Proto } else { Encoding::Json };
         self
     }
 
@@ -83,7 +89,7 @@ impl RpcClient {
             self.config.base_url.clone(),
             service_path.as_ref(),
             request,
-            self.config.use_binary,
+            self.config.encoding,
             self.config.timeout_ms,
         )?;
 
@@ -96,7 +102,7 @@ impl RpcClient {
             )
         })?;
 
-        RpcResponse::from_unary(http_response, self.config.use_binary).await
+        RpcResponse::from_unary(http_response, self.config.encoding).await
     }
 
     /// Make a unary RPC call using GET method (for idempotent operations)
@@ -113,7 +119,7 @@ impl RpcClient {
             self.config.base_url.clone(),
             service_path.as_ref(),
             request,
-            self.config.use_binary,
+            self.config.encoding,
             self.config.timeout_ms,
         )?;
 
@@ -126,7 +132,7 @@ impl RpcClient {
             )
         })?;
 
-        RpcResponse::from_unary(http_response, self.config.use_binary).await
+        RpcResponse::from_unary(http_response, self.config.encoding).await
     }
 
     /// Get the underlying reqwest client
@@ -153,7 +159,7 @@ impl RpcClient {
             self.config.base_url.clone(),
             service_path.as_ref(),
             request,
-            self.config.use_binary,
+            self.config.encoding,
             self.config.timeout_ms,
         )?;
 
@@ -166,6 +172,6 @@ impl RpcClient {
             )
         })?;
 
-        parse_streaming_response(http_response, self.config.use_binary).await
+        parse_streaming_response(http_response, self.config.encoding).await
     }
 }
