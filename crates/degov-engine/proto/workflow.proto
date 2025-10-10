@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package workflow;
+
+// Worker registration with engine
+message RegisterWorkerRequest {
+  string worker_id = 1;
+  repeated string capabilities = 2; // e.g., ["javascript", "wasm"]
+  string hostname = 3;
+}
+
+message RegisterWorkerResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Worker polls for tasks
+message PollTaskRequest {
+  string worker_id = 1;
+}
+
+message PollTaskResponse {
+  optional TaskPayload task = 1;
+  optional string no_task_reason = 2; // e.g., "no_pending_tasks"
+}
+
+// Task payload with runtime-specific data
+message TaskPayload {
+  string task_id = 1;
+  string workflow_id = 2;
+  string task_type = 3; // "javascript" or "wasm"
+  bytes code = 4; // JS code or WASM bytes
+  bytes input = 5; // Input data for the task
+  int64 timeout_ms = 6;
+  map<string, string> metadata = 7;
+}
+
+// Worker reports task completion
+message CompleteTaskRequest {
+  string worker_id = 1;
+  string task_id = 2;
+  TaskResult result = 3;
+}
+
+message TaskResult {
+  bool success = 1;
+  bytes output = 2; // Result data if successful
+  optional string error = 3; // Error message if failed
+  int64 execution_time_ms = 4;
+}
+
+message CompleteTaskResponse {
+  bool acknowledged = 1;
+}
+
+// Worker heartbeat
+message HeartbeatRequest {
+  string worker_id = 1;
+  WorkerStatus status = 2;
+}
+
+message WorkerStatus {
+  int32 active_tasks = 1;
+  int64 total_tasks_completed = 2;
+  int64 total_tasks_failed = 3;
+}
+
+message HeartbeatResponse {
+  bool active = 1;
+  optional string message = 2;
+}
+
+// RPC Service Definition
+service WorkflowService {
+  rpc RegisterWorker(RegisterWorkerRequest) returns (RegisterWorkerResponse);
+  rpc PollTask(PollTaskRequest) returns (PollTaskResponse);
+  rpc CompleteTask(CompleteTaskRequest) returns (CompleteTaskResponse);
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+}
+

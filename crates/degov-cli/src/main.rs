@@ -1,16 +1,14 @@
-use std::path::PathBuf;
-
 use clap::{Parser, Subcommand, builder::styling};
 use clap_cargo::style;
 use degov_server::Server;
-use miette::{IntoDiagnostic, bail};
+use miette::bail;
 
-mod validate;
-mod infrastructure;
 mod dgl;
+mod infrastructure;
+mod validate;
 
-use infrastructure::{InfrastructureCommands, handle_infrastructure_command};
 use dgl::{DglCommands, handle_dgl_command};
+use infrastructure::{InfrastructureCommands, handle_infrastructure_command};
 
 #[derive(Parser)]
 #[command(author, version, long_about = None)]
@@ -53,7 +51,7 @@ enum ServerCommands {
     Start {
         #[arg(short, long)]
         did: String,
-    }
+    },
 }
 
 #[tokio::main]
