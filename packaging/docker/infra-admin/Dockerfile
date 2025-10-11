@@ -11,6 +11,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/infra-admin/package.json ./apps/infra-admin/
 COPY packages/ui/package.json ./packages/ui/
+COPY packages/sdk/package.json ./packages/sdk/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -28,7 +29,7 @@ FROM nginx:alpine AS production
 COPY packaging/docker/infra-admin/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy built application from build stage
-COPY --from=base /app/apps/infra-admin/dist /usr/share/nginx/html/admin
+COPY --from=base /app/apps/infra-admin/dist /usr/share/nginx/html
 
 # Expose port
 EXPOSE 80
