@@ -45,7 +45,6 @@ ENV/
 # FoundationDB
 fdb-data/
 *.fdq
-fdb.cluster
 
 # OS specific
 .DS_Store
