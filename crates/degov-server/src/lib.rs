@@ -20,7 +20,10 @@ impl AppState {
         let did = DIDBuf::from_string(did)?;
         
         // Initialize database and workflow engine
-        let db = foundationdb::Database::from_path("/usr/local/etc/foundationdb/fdb.cluster")?;
+        let db = match std::env::var("FDB_CLUSTER_FILE") {
+            Ok(path) => foundationdb::Database::from_path(&path)?,
+            Err(_) => foundationdb::Database::default()?,
+        };
         let engine_addr = "127.0.0.1:8080".parse()?;
         let engine = Arc::new(WorkflowEngine::new(db, engine_addr).await?);
         
