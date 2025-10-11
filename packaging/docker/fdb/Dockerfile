@@ -1,4 +1,6 @@
-FROM foundationdb/foundationdb:latest
+ARG FDB_VERSION=7.3.63
+
+FROM foundationdb/foundationdb:${FDB_VERSION}
 
 # Copy fixed scripts that properly handle IPv6 addresses
 # These scripts must be placed in /var/fdb/scripts/ as that's where
