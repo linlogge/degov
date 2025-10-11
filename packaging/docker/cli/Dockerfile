@@ -60,7 +60,7 @@ COPY --from=rust-builder /build/target/release/degov-cli /usr/local/bin/degov
 COPY packaging/docker/cli/start-server.bash /app/start-server.bash
 
 # Copy the cluster file
-COPY packaging/docker/cli/fdb.cluster /app/fdb.cluster
+COPY fdb.cluster /app/fdb.cluster
 
 # Set ownership
 RUN chown -R degov:degov /app /usr/local/bin/degov
