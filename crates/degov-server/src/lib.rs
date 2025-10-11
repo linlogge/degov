@@ -5,6 +5,8 @@ use degov_engine::WorkflowEngine;
 mod error;
 mod services;
 
+use tracing::info;
+
 pub use error::ServerError;
 pub use services::WorkflowService;
 
@@ -21,9 +23,21 @@ impl AppState {
         
         // Initialize database and workflow engine
         let db = match std::env::var("FDB_CLUSTER_FILE") {
-            Ok(path) => foundationdb::Database::from_path(&path)?,
+            Ok(path) => {
+                println!("Using FDB cluster file: {}", path);
+                match tokio::fs::read_to_string(&path).await {
+                    Ok(contents) => {
+                        println!("Contents: {}", contents);
+                    },
+                    Err(e) => {
+                        println!("Error reading FDB cluster file: {}", e);
+                    }
+                };
+                foundationdb::Database::from_path(&path)?
+            },
             Err(_) => foundationdb::Database::default()?,
         };
+
         let engine_addr = "127.0.0.1:8080".parse()?;
         let engine = Arc::new(WorkflowEngine::new(db, engine_addr).await?);
         
