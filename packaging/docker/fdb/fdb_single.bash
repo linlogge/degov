@@ -66,7 +66,7 @@ function start_fdb () {
     source /var/fdb/.fdbenv
     echo "Starting FDB server on $PUBLIC_IP:$FDB_PORT"
     fdbserver --listen-address "[::]:$FDB_PORT" \
-              --public-address "fdb-coordinator.railway.internal:$FDB_PORT" \
+              --public-address "auto:$FDB_PORT" \
               --datadir /var/fdb/data \
               --logdir /var/fdb/logs \
               --locality-zoneid="$(hostname)" \
