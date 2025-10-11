@@ -65,7 +65,7 @@ function start_fdb () {
     create_server_environment
     source /var/fdb/.fdbenv
     echo "Starting FDB server on $PUBLIC_IP:$FDB_PORT"
-    fdbserver --listen-address 0.0.0.0:"$FDB_PORT" \
+    fdbserver --listen-address "[::]:$FDB_PORT" \
               --public-address "auto:$FDB_PORT" \
               --datadir /var/fdb/data \
               --logdir /var/fdb/logs \
