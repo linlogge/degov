@@ -9,7 +9,10 @@ pub async fn start_server(server: Server) -> Result<(), Box<dyn std::error::Erro
     
     // Start the engine's RPC server for workers (on 8080)
     let engine = server.state().engine.clone();
-    let engine_addr = "127.0.0.1:8080".parse()?;
+
+    let listen_addr = std::env::var("ENGINE_LISTEN_ADDR").unwrap_or_else(|_| "127.0.0.1:8080".to_string());
+
+    let engine_addr = listen_addr.parse()?;
     let mut shutdown_rx1 = shutdown_tx.subscribe();
     
     let engine_handle = tokio::spawn(async move {
