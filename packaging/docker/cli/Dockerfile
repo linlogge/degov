@@ -1,25 +1,3 @@
-# Multi-stage build for degov-cli and infra-admin
-# Stage 1: Build the React application
-FROM node:20-bookworm AS frontend-builder
-
-# Install pnpm
-RUN npm install -g pnpm@10.18.0
-
-# Create working directory
-WORKDIR /build
-
-# Copy package files for dependency resolution
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY packages/ ./packages/
-COPY apps/infra-admin/ ./apps/infra-admin/
-
-# Install dependencies
-RUN pnpm install --frozen-lockfile
-
-# Build the React application
-WORKDIR /build/apps/infra-admin
-RUN pnpm --filter=infra-admin build --base=/admin/
-
 # Stage 2: Build the Rust application
 FROM rust:1.90-bookworm AS rust-builder
 
@@ -75,14 +53,11 @@ RUN ARCH=$(dpkg --print-architecture) && \
 # Create a non-root user
 RUN useradd -m -u 1000 degov
 
-# Create directories for the application
-RUN mkdir -p /app/apps/infra-admin/dist
-
-# Copy the built React app from frontend-builder
-COPY --from=frontend-builder /build/apps/infra-admin/dist /app/apps/infra-admin/dist
-
 # Copy the built binary from rust-builder
 COPY --from=rust-builder /build/target/release/degov-cli /usr/local/bin/degov
+
+# Copy the start script
+COPY packaging/docker/cli/start-server.bash /app/start-server.bash
 
 # Set ownership
 RUN chown -R degov:degov /app /usr/local/bin/degov

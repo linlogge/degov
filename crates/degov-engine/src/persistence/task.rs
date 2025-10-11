@@ -21,6 +21,11 @@ impl TaskStore {
     /// Enqueue a task for execution
     pub async fn enqueue(&self, task: TaskExecution) -> PersistenceResult<()> {
         let tx = self.db.create_trx()?;
+        
+        // Set transaction timeout to 2 seconds
+        tx.set_option(foundationdb::options::TransactionOption::Timeout(2000))?;
+        tx.set_option(foundationdb::options::TransactionOption::RetryLimit(5))?;
+        
         self.enqueue_tx(&tx, task).await?;
         tx.commit().await?;
         Ok(())
@@ -43,6 +48,11 @@ impl TaskStore {
     /// Dequeue next pending task (atomic operation)
     pub async fn dequeue(&self, worker_id: &WorkerId) -> PersistenceResult<Option<TaskExecution>> {
         let tx = self.db.create_trx()?;
+        
+        // Set transaction timeout to 2 seconds
+        tx.set_option(foundationdb::options::TransactionOption::Timeout(2000))?;
+        tx.set_option(foundationdb::options::TransactionOption::RetryLimit(5))?;
+        
         let result = self.dequeue_tx(&tx, worker_id).await?;
         tx.commit().await?;
         Ok(result)
@@ -108,6 +118,11 @@ impl TaskStore {
         result: TaskResult,
     ) -> PersistenceResult<()> {
         let tx = self.db.create_trx()?;
+        
+        // Set transaction timeout to 2 seconds
+        tx.set_option(foundationdb::options::TransactionOption::Timeout(2000))?;
+        tx.set_option(foundationdb::options::TransactionOption::RetryLimit(5))?;
+        
         self.complete_tx(&tx, task_id, result).await?;
         tx.commit().await?;
         Ok(())
@@ -169,6 +184,10 @@ impl TaskStore {
     /// Reschedule a failed task for retry
     pub async fn reschedule(&self, task_id: &TaskId) -> PersistenceResult<()> {
         let tx = self.db.create_trx()?;
+        
+        // Set transaction timeout to 2 seconds
+        tx.set_option(foundationdb::options::TransactionOption::Timeout(2000))?;
+        tx.set_option(foundationdb::options::TransactionOption::RetryLimit(5))?;
         
         let task_key = build_key(keys::TASK_PREFIX, &task_id.to_string());
         let task_bytes = tx.get(&task_key, false).await?

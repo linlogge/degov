@@ -21,6 +21,11 @@ impl WorkflowStore {
     /// Save a workflow definition
     pub async fn save_definition(&self, definition: &WorkflowDefinition) -> PersistenceResult<()> {
         let tx = self.db.create_trx()?;
+        
+        // Set transaction timeout to 2 seconds
+        tx.set_option(foundationdb::options::TransactionOption::Timeout(2000))?;
+        tx.set_option(foundationdb::options::TransactionOption::RetryLimit(5))?;
+        
         self.save_definition_tx(&tx, definition).await?;
         tx.commit().await?;
         Ok(())
@@ -67,6 +72,11 @@ impl WorkflowStore {
     /// Save a workflow instance
     pub async fn save_instance(&self, instance: &WorkflowInstance) -> PersistenceResult<()> {
         let tx = self.db.create_trx()?;
+        
+        // Set transaction timeout to 2 seconds
+        tx.set_option(foundationdb::options::TransactionOption::Timeout(2000))?;
+        tx.set_option(foundationdb::options::TransactionOption::RetryLimit(5))?;
+        
         self.save_instance_tx(&tx, instance).await?;
         tx.commit().await?;
         Ok(())
@@ -119,6 +129,10 @@ impl WorkflowStore {
     ) -> PersistenceResult<()> {
         let tx = self.db.create_trx()?;
         
+        // Set transaction timeout to 2 seconds
+        tx.set_option(foundationdb::options::TransactionOption::Timeout(2000))?;
+        tx.set_option(foundationdb::options::TransactionOption::RetryLimit(5))?;
+        
         let mut instance = self.get_instance_tx(&tx, id).await?
             .ok_or_else(|| PersistenceError::NotFound(id.to_string()))?;
         
@@ -143,6 +157,10 @@ impl WorkflowStore {
     ) -> PersistenceResult<()> {
         let tx = self.db.create_trx()?;
         
+        // Set transaction timeout to 2 seconds
+        tx.set_option(foundationdb::options::TransactionOption::Timeout(2000))?;
+        tx.set_option(foundationdb::options::TransactionOption::RetryLimit(5))?;
+        
         let mut instance = self.get_instance_tx(&tx, id).await?
             .ok_or_else(|| PersistenceError::NotFound(id.to_string()))?;
         
@@ -157,6 +175,11 @@ impl WorkflowStore {
     /// Delete a workflow instance
     pub async fn delete_instance(&self, id: &WorkflowId) -> PersistenceResult<()> {
         let tx = self.db.create_trx()?;
+        
+        // Set transaction timeout to 2 seconds
+        tx.set_option(foundationdb::options::TransactionOption::Timeout(2000))?;
+        tx.set_option(foundationdb::options::TransactionOption::RetryLimit(3))?;
+        
         let key = build_key(keys::WORKFLOW_PREFIX, &id.to_string());
         tx.clear(&key);
         tx.commit().await?;

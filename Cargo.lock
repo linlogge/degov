@@ -1396,9 +1396,10 @@ dependencies = [
  "async-stream",
  "axum",
  "axum-extra",
- "degov-engine",
+ "chrono",
  "degov-rpc",
  "degov-rpc-build",
+ "degov-server",
  "prost",
  "reqwest 0.12.23",
  "serde",
@@ -1406,20 +1407,28 @@ dependencies = [
  "thiserror 1.0.69",
  "tokio",
  "tower-http",
+ "uuid",
 ]
 
 [[package]]
 name = "degov-cli"
 version = "0.1.0"
 dependencies = [
+ "axum",
  "clap",
  "clap-cargo",
  "colored",
+ "degov-api",
  "degov-core",
  "degov-dgl",
+ "degov-engine",
  "degov-server",
+ "degov-storage",
  "miette",
  "tokio",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -1577,16 +1586,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "degov-rpc-examples"
+version = "0.0.1"
+dependencies = [
+ "anyhow",
+ "async-stream",
+ "axum",
+ "axum-extra",
+ "degov-rpc",
+ "degov-rpc-build",
+ "prost",
+ "thiserror 2.0.17",
+ "tokio",
+ "tower-http",
+]
+
+[[package]]
 name = "degov-server"
 version = "0.1.0"
 dependencies = [
- "axum",
- "degov-api",
  "degov-core",
+ "degov-engine",
  "degov-storage",
- "hex",
+ "foundationdb",
+ "serde_json",
+ "thiserror 1.0.69",
  "tokio",
- "tower-http",
+ "uuid",
 ]
 
 [[package]]
@@ -3764,6 +3790,15 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 1.0.109",
+]
+
+[[package]]
+name = "matchers"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d1525a2a28c7f4fa0fc98bb91ae755d1e2d1505079e05539e35bc876b5d65ae9"
+dependencies = [
+ "regex-automata",
 ]
 
 [[package]]
@@ -6623,10 +6658,14 @@ version = "0.3.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2054a14f5307d601f88daf0553e1cbf472acc4f2c51afab632431cdcd72124d5"
 dependencies = [
+ "matchers",
  "nu-ansi-term",
+ "once_cell",
+ "regex-automata",
  "sharded-slab",
  "smallvec",
  "thread_local",
+ "tracing",
  "tracing-core",
  "tracing-log",
 ]

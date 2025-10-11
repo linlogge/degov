@@ -32,7 +32,7 @@ bytes = "1.7"
 reqwest = { version = "0.12", features = ["json"] }
 
 [build-dependencies]
-degov-rpc-build = { path = "../degov-rpc/degov-rpc-build" }
+degov-rpc-build = { path = "../degov-rpc-build" }
 
 [dev-dependencies]
 tracing-subscriber = "0.3"

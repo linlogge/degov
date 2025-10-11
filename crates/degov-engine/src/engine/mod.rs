@@ -6,6 +6,7 @@ mod server;
 
 pub use registry::WorkflowRegistry;
 pub use scheduler::TaskScheduler;
+pub use server::run_server;
 
 use crate::error::{EngineError, Result};
 use crate::persistence::PersistenceLayer;

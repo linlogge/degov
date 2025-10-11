@@ -72,34 +72,3 @@ pub use foundationdb;
 
 /// Library version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
-
-/// Initialize the workflow engine library
-///
-/// This should be called once at application startup before using any engine components.
-pub fn init() -> Result<()> {
-    // Initialize FoundationDB (synchronous in foundationdb 0.9)
-    unsafe {
-        foundationdb::boot();
-    }
-    
-    // Initialize tracing if not already done
-    if tracing::dispatcher::has_been_set() {
-        tracing::debug!("Tracing already initialized");
-    } else {
-        tracing_subscriber::fmt::init();
-    }
-    
-    tracing::info!("Degov workflow engine initialized (version {})", VERSION);
-    Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_version() {
-        assert!(!VERSION.is_empty());
-    }
-}
-

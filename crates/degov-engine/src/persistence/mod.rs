@@ -56,6 +56,10 @@ impl PersistenceLayer {
     /// Run a health check
     pub async fn health_check(&self) -> PersistenceResult<()> {
         let tx = self.db.create_trx()?;
+        
+        // Set transaction timeout to 2 seconds
+        tx.set_option(foundationdb::options::TransactionOption::Timeout(2000))?;
+        
         // Simple read to verify database connection
         let _result = tx.get(b"health_check", false).await?;
         tx.cancel();

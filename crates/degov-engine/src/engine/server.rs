@@ -3,33 +3,27 @@
 use crate::engine::WorkflowEngine;
 use crate::error::Result;
 use crate::types::{RuntimeType, WorkerHealthStatus, WorkerInfo, WorkerId, WorkerStats};
-use axum::{extract::State, routing::post, Router};
+use axum::Router;
 use chrono::Utc;
+use degov_rpc::prelude::*;
 use std::net::SocketAddr;
 use std::sync::Arc;
 
 // Include generated protobuf code
-include!(concat!(env!("OUT_DIR"), "/workflow.rs"));
+mod proto {
+    include!(concat!(env!("OUT_DIR"), "/workflow.rs"));
+}
 
-/// Run the RPC server
+use proto::*;
+
+/// Run the RPC server using the generated service handlers
 pub async fn run_server(engine: Arc<WorkflowEngine>, bind_addr: SocketAddr) -> Result<()> {
+    // Use the generated RPC service methods
     let app = Router::new()
-        .route(
-            "/workflow.WorkflowService/RegisterWorker",
-            post(register_worker_handler),
-        )
-        .route(
-            "/workflow.WorkflowService/PollTask",
-            post(poll_task_handler),
-        )
-        .route(
-            "/workflow.WorkflowService/CompleteTask",
-            post(complete_task_handler),
-        )
-        .route(
-            "/workflow.WorkflowService/Heartbeat",
-            post(heartbeat_handler),
-        )
+        .rpc(WorkflowService::register_worker(register_worker_handler))
+        .rpc(WorkflowService::poll_task(poll_task_handler))
+        .rpc(WorkflowService::complete_task(complete_task_handler))
+        .rpc(WorkflowService::heartbeat(heartbeat_handler))
         .with_state(engine);
 
     let listener = tokio::net::TcpListener::bind(bind_addr).await
@@ -44,21 +38,9 @@ pub async fn run_server(engine: Arc<WorkflowEngine>, bind_addr: SocketAddr) -> R
 }
 
 async fn register_worker_handler(
-    State(engine): State<Arc<WorkflowEngine>>,
-    body: axum::body::Bytes,
-) -> axum::response::Response {
-    use prost::Message;
-    
-    let request = match RegisterWorkerRequest::decode(body) {
-        Ok(req) => req,
-        Err(e) => {
-            tracing::error!("Failed to decode register request: {}", e);
-            return axum::response::Response::builder()
-                .status(400)
-                .body(axum::body::Body::from("Invalid request"))
-                .unwrap();
-        }
-    };
+    axum::extract::State(engine): axum::extract::State<Arc<WorkflowEngine>>,
+    request: RegisterWorkerRequest,
+) -> RegisterWorkerResponse {
 
     let worker_id = WorkerId::from_string(request.worker_id.clone());
     let capabilities: Vec<RuntimeType> = request
@@ -87,50 +69,24 @@ async fn register_worker_handler(
     // Persist to database
     if let Err(e) = engine.persistence().workers().register(worker).await {
         tracing::error!("Failed to persist worker: {}", e);
-        let response = RegisterWorkerResponse {
+        return RegisterWorkerResponse {
             success: false,
             message: format!("Failed to register: {}", e),
         };
-        let mut buf = bytes::BytesMut::new();
-        response.encode(&mut buf).unwrap();
-        return axum::response::Response::builder()
-            .status(500)
-            .body(axum::body::Body::from(buf.freeze()))
-            .unwrap();
     }
 
     tracing::info!("Registered worker: {}", worker_id);
 
-    let response = RegisterWorkerResponse {
+    RegisterWorkerResponse {
         success: true,
         message: "Worker registered successfully".to_string(),
-    };
-
-    let mut buf = bytes::BytesMut::new();
-    response.encode(&mut buf).unwrap();
-    axum::response::Response::builder()
-        .status(200)
-        .body(axum::body::Body::from(buf.freeze()))
-        .unwrap()
+    }
 }
 
 async fn poll_task_handler(
-    State(engine): State<Arc<WorkflowEngine>>,
-    body: axum::body::Bytes,
-) -> axum::response::Response {
-    use prost::Message;
-    
-    let request = match PollTaskRequest::decode(body) {
-        Ok(req) => req,
-        Err(e) => {
-            tracing::error!("Failed to decode poll request: {}", e);
-            return axum::response::Response::builder()
-                .status(400)
-                .body(axum::body::Body::from("Invalid request"))
-                .unwrap();
-        }
-    };
-
+    axum::extract::State(engine): axum::extract::State<Arc<WorkflowEngine>>,
+    request: PollTaskRequest,
+) -> PollTaskResponse {
     let worker_id = WorkerId::from_string(request.worker_id);
 
     // Try to dequeue a task
@@ -146,73 +102,38 @@ async fn poll_task_handler(
                 metadata: std::collections::HashMap::new(),
             };
 
-            let response = PollTaskResponse {
+            PollTaskResponse {
                 task: Some(payload),
                 no_task_reason: None,
-            };
-
-            let mut buf = bytes::BytesMut::new();
-            response.encode(&mut buf).unwrap();
-            axum::response::Response::builder()
-                .status(200)
-                .body(axum::body::Body::from(buf.freeze()))
-                .unwrap()
+            }
         }
         Ok(None) => {
-            let response = PollTaskResponse {
+            PollTaskResponse {
                 task: None,
                 no_task_reason: Some("no_pending_tasks".to_string()),
-            };
-
-            let mut buf = bytes::BytesMut::new();
-            response.encode(&mut buf).unwrap();
-            axum::response::Response::builder()
-                .status(200)
-                .body(axum::body::Body::from(buf.freeze()))
-                .unwrap()
+            }
         }
         Err(e) => {
             tracing::error!("Failed to dequeue task: {}", e);
-            let response = PollTaskResponse {
+            PollTaskResponse {
                 task: None,
                 no_task_reason: Some(format!("error: {}", e)),
-            };
-
-            let mut buf = bytes::BytesMut::new();
-            response.encode(&mut buf).unwrap();
-            axum::response::Response::builder()
-                .status(500)
-                .body(axum::body::Body::from(buf.freeze()))
-                .unwrap()
+            }
         }
     }
 }
 
 async fn complete_task_handler(
-    State(engine): State<Arc<WorkflowEngine>>,
-    body: axum::body::Bytes,
-) -> axum::response::Response {
-    use prost::Message;
-    
-    let request = match CompleteTaskRequest::decode(body) {
-        Ok(req) => req,
-        Err(e) => {
-            tracing::error!("Failed to decode complete request: {}", e);
-            return axum::response::Response::builder()
-                .status(400)
-                .body(axum::body::Body::from("Invalid request"))
-                .unwrap();
-        }
-    };
-
+    axum::extract::State(engine): axum::extract::State<Arc<WorkflowEngine>>,
+    request: CompleteTaskRequest,
+) -> CompleteTaskResponse {
     let task_id = match uuid::Uuid::parse_str(&request.task_id) {
         Ok(id) => crate::types::TaskId::from_uuid(id),
         Err(e) => {
             tracing::error!("Invalid task ID: {}", e);
-            return axum::response::Response::builder()
-                .status(400)
-                .body(axum::body::Body::from("Invalid task ID"))
-                .unwrap();
+            return CompleteTaskResponse {
+                acknowledged: false,
+            };
         }
     };
 
@@ -226,49 +147,22 @@ async fn complete_task_handler(
 
     if let Err(e) = engine.persistence().tasks().complete(&task_id, result).await {
         tracing::error!("Failed to complete task: {}", e);
-        let response = CompleteTaskResponse {
+        return CompleteTaskResponse {
             acknowledged: false,
         };
-
-        let mut buf = bytes::BytesMut::new();
-        response.encode(&mut buf).unwrap();
-        return axum::response::Response::builder()
-            .status(500)
-            .body(axum::body::Body::from(buf.freeze()))
-            .unwrap();
     }
 
     tracing::info!("Task {} completed", task_id);
 
-    let response = CompleteTaskResponse {
+    CompleteTaskResponse {
         acknowledged: true,
-    };
-
-    let mut buf = bytes::BytesMut::new();
-    response.encode(&mut buf).unwrap();
-    axum::response::Response::builder()
-        .status(200)
-        .body(axum::body::Body::from(buf.freeze()))
-        .unwrap()
+    }
 }
 
 async fn heartbeat_handler(
-    State(engine): State<Arc<WorkflowEngine>>,
-    body: axum::body::Bytes,
-) -> axum::response::Response {
-    use prost::Message;
-    
-    let request = match HeartbeatRequest::decode(body) {
-        Ok(req) => req,
-        Err(e) => {
-            tracing::error!("Failed to decode heartbeat request: {}", e);
-            return axum::response::Response::builder()
-                .status(400)
-                .body(axum::body::Body::from("Invalid request"))
-                .unwrap();
-        }
-    };
-
+    axum::extract::State(engine): axum::extract::State<Arc<WorkflowEngine>>,
+    request: HeartbeatRequest,
+) -> HeartbeatResponse {
     let worker_id = WorkerId::from_string(request.worker_id.clone());
 
     // Update heartbeat in persistence
@@ -286,16 +180,8 @@ async fn heartbeat_handler(
         );
     }
 
-    let response = HeartbeatResponse {
+    HeartbeatResponse {
         active: true,
         message: Some("Heartbeat received".to_string()),
-    };
-
-    let mut buf = bytes::BytesMut::new();
-    response.encode(&mut buf).unwrap();
-    axum::response::Response::builder()
-        .status(200)
-        .body(axum::body::Body::from(buf.freeze()))
-        .unwrap()
+    }
 }
-

@@ -13,10 +13,12 @@ axum-extra = "0.10.0"
 thiserror.workspace = true
 anyhow.workspace = true
 degov-rpc = { path = "../degov-rpc" }
-degov-engine = { path = "../degov-engine" }
+degov-server = { path = "../degov-server" }
 reqwest = { version = "0.12.8", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+uuid = "1.11"
+chrono = "0.4"
 
 [build-dependencies]
-degov-rpc-build = { path = "../degov-rpc/degov-rpc-build" }
+degov-rpc-build = { path = "../degov-rpc-build" }

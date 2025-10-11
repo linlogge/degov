@@ -24,10 +24,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("🚀 Starting workflow engine example...\n");
 
     // Initialize the workflow engine library
-    degov_engine::init()?;
+    let network = unsafe { foundationdb::boot() };
 
     // Connect to FoundationDB
-    let db = foundationdb::Database::default()?;
+    let db = foundationdb::Database::from_path("/Users/noelsigmunczyk/Projects/degov/fdb.cluster")?;
 
     // Create the workflow engine
     let engine = Arc::new(WorkflowEngine::new(db, "127.0.0.1:8080".parse()?).await?);
@@ -130,6 +130,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("\n👋 Shutting down gracefully...");
         }
     }
+
+    drop(network);
 
     Ok(())
 }

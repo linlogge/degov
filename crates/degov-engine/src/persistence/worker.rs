@@ -21,6 +21,13 @@ impl WorkerStore {
     /// Register a worker
     pub async fn register(&self, worker: WorkerInfo) -> PersistenceResult<()> {
         let tx = self.db.create_trx()?;
+        
+        // Set transaction timeout to 2 seconds
+        tx.set_option(foundationdb::options::TransactionOption::Timeout(2000))?;
+        
+        // Set retry limit
+        tx.set_option(foundationdb::options::TransactionOption::RetryLimit(5))?;
+        
         self.register_tx(&tx, worker).await?;
         tx.commit().await?;
         Ok(())
@@ -70,6 +77,10 @@ impl WorkerStore {
     pub async fn heartbeat(&self, worker_id: &WorkerId) -> PersistenceResult<()> {
         let tx = self.db.create_trx()?;
         
+        // Set transaction timeout to 2 seconds
+        tx.set_option(foundationdb::options::TransactionOption::Timeout(2000))?;
+        tx.set_option(foundationdb::options::TransactionOption::RetryLimit(3))?;
+        
         let heartbeat_key = build_key(keys::WORKER_HEARTBEAT_PREFIX, worker_id.as_str());
         let timestamp = Utc::now().timestamp_millis().to_be_bytes();
         tx.set(&heartbeat_key, &timestamp);
@@ -99,6 +110,10 @@ impl WorkerStore {
     ) -> PersistenceResult<()> {
         let tx = self.db.create_trx()?;
         
+        // Set transaction timeout to 2 seconds
+        tx.set_option(foundationdb::options::TransactionOption::Timeout(2000))?;
+        tx.set_option(foundationdb::options::TransactionOption::RetryLimit(3))?;
+        
         let worker_key = build_key(keys::WORKER_PREFIX, worker_id.as_str());
         if let Some(worker_bytes) = tx.get(&worker_key, false).await? {
             let mut worker: WorkerInfo = serde_json::from_slice(worker_bytes.as_ref())?;
@@ -117,6 +132,10 @@ impl WorkerStore {
     /// Unregister a worker
     pub async fn unregister(&self, worker_id: &WorkerId) -> PersistenceResult<()> {
         let tx = self.db.create_trx()?;
+        
+        // Set transaction timeout to 2 seconds
+        tx.set_option(foundationdb::options::TransactionOption::Timeout(2000))?;
+        tx.set_option(foundationdb::options::TransactionOption::RetryLimit(3))?;
         
         let worker_key = build_key(keys::WORKER_PREFIX, worker_id.as_str());
         tx.clear(&worker_key);
