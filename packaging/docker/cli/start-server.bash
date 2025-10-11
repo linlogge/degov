@@ -2,7 +2,7 @@
 
 set -eu;
 
-FDB_CLUSTER_FILE="fdb.cluster"
+FDB_CLUSTER_FILE="/app/fdb.cluster"
 
 # Attempt to connect. Configure the database if necessary.
 if ! /usr/bin/fdbcli -C $FDB_CLUSTER_FILE --exec status --timeout 3 ; then
