@@ -92,8 +92,30 @@ function create_server_environment() {
 function start_fdb () {
     create_server_environment
     source /var/fdb/.fdbenv
-    echo "Starting FDB server (modified) on $FORMATTED_PUBLIC_IP:$FDB_PORT"
-    fdbserver --listen_address "[::]:$FDB_PORT" \
+    
+    # Determine listen address based on FDB_LISTEN_IP_VERSION
+    # Options: ipv4, ipv6 (default), auto (dual-stack)
+    FDB_LISTEN_IP_VERSION=${FDB_LISTEN_IP_VERSION:-ipv6}
+    
+    case "$FDB_LISTEN_IP_VERSION" in
+        ipv4)
+            listen_address="0.0.0.0:$FDB_PORT"
+            ;;
+        ipv6)
+            listen_address="[::]:$FDB_PORT"
+            ;;
+        auto|dual)
+            # Dual-stack: listen on both IPv4 and IPv6
+            listen_address="0.0.0.0:$FDB_PORT"
+            ;;
+        *)
+            echo "Invalid FDB_LISTEN_IP_VERSION: $FDB_LISTEN_IP_VERSION (must be ipv4, ipv6, or auto)" 1>&2
+            exit 1
+            ;;
+    esac
+    
+    echo "Starting FDB server (modified) on $FORMATTED_PUBLIC_IP:$FDB_PORT (listening on $listen_address)"
+    fdbserver --listen_address "$listen_address" \
               --public_address "$FORMATTED_PUBLIC_IP:$FDB_PORT" \
               --datadir /var/fdb/data \
               --logdir /var/fdb/logs \

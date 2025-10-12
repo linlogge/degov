@@ -51,7 +51,7 @@ docker build -t degov-fdb:latest .
 
 ## Usage
 
-### Single Node (IPv4 or IPv6)
+### Single Node (Default IPv6)
 
 ```bash
 docker run \
@@ -61,7 +61,29 @@ docker run \
   degov-fdb:latest
 ```
 
-### With IPv6 Networking
+### Single Node (IPv4 Only)
+
+```bash
+docker run \
+  -e FDB_NETWORKING_MODE=container \
+  -e FDB_PORT=4500 \
+  -e FDB_LISTEN_IP_VERSION=ipv4 \
+  -p 4500:4500 \
+  degov-fdb:latest
+```
+
+### Single Node (Dual-Stack: IPv4 + IPv6)
+
+```bash
+docker run \
+  -e FDB_NETWORKING_MODE=container \
+  -e FDB_PORT=4500 \
+  -e FDB_LISTEN_IP_VERSION=auto \
+  -p 4500:4500 \
+  degov-fdb:latest
+```
+
+### With IPv6 Host Networking
 
 ```bash
 docker run \
@@ -79,6 +101,7 @@ docker run \
 - `FDB_COORDINATOR` - Coordinator hostname for multi-node setup
 - `FDB_COORDINATOR_PORT` - Coordinator port (default: 4500)
 - `FDB_CLUSTER_FILE_CONTENTS` - Direct cluster file contents
+- `FDB_LISTEN_IP_VERSION` - IP version to listen on: `ipv4`, `ipv6` (default), or `auto` (dual-stack)
 
 ## Testing
 

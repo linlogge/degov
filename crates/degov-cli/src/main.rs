@@ -80,6 +80,7 @@ enum WorkerCommands {
 
 #[tokio::main]
 async fn main() -> miette::Result<()> {
+    
     let cli = Cli::parse();
 
     match &cli.command {
