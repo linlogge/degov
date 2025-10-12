@@ -37,7 +37,7 @@ COPY --from=base /app/apps/infra-admin/dist /usr/share/nginx/html
 EXPOSE 80
 
 # Environment variable that will be substituted
-ENV API_URL=${API_URL:-http://localhost:3030/rpc}
+ENV API_URL=http://localhost:3030/api
 
 # Start nginx (nginx:alpine automatically processes /etc/nginx/templates/*.template with envsubst)
 CMD ["nginx", "-g", "daemon off;"]
