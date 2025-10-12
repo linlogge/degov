@@ -1,24 +1,20 @@
-use axum::{Router, http::HeaderValue};
+use axum::Router;
 use degov_server::Server;
+use tower_http::{cors::CorsLayer, services::{ServeDir, ServeFile}};
 use tokio::sync::broadcast;
-use tower_http::{
-    cors::CorsLayer,
-    services::{ServeDir, ServeFile},
-};
 
 pub async fn start_server(server: Server) -> Result<(), Box<dyn std::error::Error>> {
     // Create shutdown channel
     let (shutdown_tx, _) = broadcast::channel::<()>(1);
-
+    
     // Start the engine's RPC server for workers (on 8080)
     let engine = server.state().engine.clone();
 
-    let listen_addr =
-        std::env::var("ENGINE_LISTEN_ADDR").unwrap_or_else(|_| "127.0.0.1:8080".to_string());
+    let listen_addr = std::env::var("ENGINE_LISTEN_ADDR").unwrap_or_else(|_| "127.0.0.1:8080".to_string());
 
     let engine_addr = listen_addr.parse()?;
     let mut shutdown_rx1 = shutdown_tx.subscribe();
-
+    
     let engine_handle = tokio::spawn(async move {
         tokio::select! {
             result = degov_engine::engine::run_server(engine, engine_addr) => {
@@ -49,12 +45,12 @@ pub async fn start_server(server: Server) -> Result<(), Box<dyn std::error::Erro
 
     // Wait for shutdown signal
     wait_for_shutdown_signal().await;
-
+    
     tracing::info!("Shutdown signal received, gracefully shutting down...");
-
+    
     // Send shutdown signal to all servers
     let _ = shutdown_tx.send(());
-
+    
     // Wait for servers to shutdown with timeout
     let shutdown_timeout = tokio::time::Duration::from_secs(30);
     tokio::select! {
@@ -65,7 +61,7 @@ pub async fn start_server(server: Server) -> Result<(), Box<dyn std::error::Erro
             tracing::warn!("Engine RPC server shutdown timed out");
         }
     }
-
+    
     tokio::select! {
         _ = http_handle => {
             tracing::info!("HTTP API server stopped");
@@ -74,15 +70,15 @@ pub async fn start_server(server: Server) -> Result<(), Box<dyn std::error::Erro
             tracing::warn!("HTTP API server shutdown timed out");
         }
     }
-
+    
     tracing::info!("Server shutdown complete");
-
+    
     Ok(())
 }
 
 async fn wait_for_shutdown_signal() {
     use tokio::signal;
-
+    
     let ctrl_c = async {
         signal::ctrl_c()
             .await
@@ -120,30 +116,27 @@ async fn start_http_server(server: Server) -> Result<(), Box<dyn std::error::Err
 
     // Add API routes with workflow service
     app = degov_api::add_api_routes(app, server.workflow_service()).await;
-
+    
     // Add admin UI routes
     app = add_infra_admin_routes(app);
 
-    axum::serve(
-        listener,
-        app.layer(CorsLayer::very_permissive().allow_origin(HeaderValue::from_static("*"))),
-    )
-    .await?;
+    axum::serve(listener, app.layer(CorsLayer::very_permissive()))
+        .await?;
 
     Ok(())
 }
 
 fn add_infra_admin_routes(mut app: Router) -> Router {
     let spa_path = "./apps/infra-admin/dist";
-
+    
     // Create a ServeDir with fallback to index.html for SPA routing
     let serve_dir = ServeDir::new(spa_path)
         .not_found_service(ServeFile::new(format!("{}/index.html", spa_path)));
-
+    
     // Mount the SPA service at /admin with fallback
-    app = app
-        .nest_service("/admin", serve_dir.clone())
-        .fallback_service(serve_dir);
+    app = app.nest_service("/admin", serve_dir.clone())
+             .fallback_service(serve_dir);
 
     app
 }
+
