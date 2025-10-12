@@ -7,7 +7,7 @@ import { routeTree } from "./routeTree.gen";
 
 import "./styles.css";
 import reportWebVitals from "./reportWebVitals.ts";
-import { transport } from "@degov/sdk";
+import { createConnectTransport } from "@degov/sdk";
 import { QueryClient, QueryClientProvider, TransportProvider } from "@degov/sdk/query";
 
 // Create a new router instance
@@ -29,6 +29,9 @@ declare module "@tanstack/react-router" {
 }
 
 const queryClient = new QueryClient();
+const transport = createConnectTransport({
+  baseUrl: import.meta.env.VITE_API_URL || "/rpc"
+})
 
 // Render the app
 const rootElement = document.getElementById("app");

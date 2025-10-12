@@ -19,6 +19,9 @@ RUN pnpm install --frozen-lockfile
 # Copy source code
 COPY . .
 
+ARG API_URL
+ENV VITE_API_URL=${API_URL}
+
 # Build the application
 RUN pnpm build --filter=infra-admin
 
