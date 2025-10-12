@@ -1,6 +1,6 @@
 use axum::Router;
 use std::sync::Arc;
-use degov_server::WorkflowService;
+use crate::WorkflowService;
 
 mod error;
 mod engine;

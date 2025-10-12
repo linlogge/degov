@@ -115,7 +115,7 @@ async fn start_http_server(server: Server) -> Result<(), Box<dyn std::error::Err
     let mut app = Router::new();
 
     // Add API routes with workflow service
-    app = degov_api::add_api_routes(app, server.workflow_service()).await;
+    app = degov_server::api::add_api_routes(app, server.workflow_service()).await;
     
     // Add admin UI routes
     app = add_infra_admin_routes(app);

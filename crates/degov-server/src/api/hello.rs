@@ -1,7 +1,7 @@
 use axum::Router;
 use degov_rpc::prelude::RpcRouterExt;
 
-use crate::{hello::types::{HelloRequest, HelloResponse, HelloWorldService}, Error};
+use super::{hello::types::{HelloRequest, HelloResponse, HelloWorldService}, Error};
 
 pub mod types {
     include!(concat!(env!("OUT_DIR"), "/hello.rs"));

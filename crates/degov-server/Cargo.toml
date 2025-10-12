@@ -4,6 +4,12 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
+anyhow = { workspace = true }
+axum = "0.8"
+prost = "0.13"
+async-stream = "0.3.6"
+tower-http = { version = "0.6.6", features = ["cors", "fs"] }
+axum-extra = "0.10.0"
 degov-storage = { path = "../degov-storage" }
 degov-core = { path = "../degov-core" }
 degov-engine = { path = "../degov-engine" }
@@ -13,3 +19,8 @@ serde_json = { workspace = true }
 foundationdb = { version = "0.9.2", features = ["fdb-7_3"] }
 uuid = { version = "1.11", features = ["v4", "serde"] }
 tracing = "0.1.41"
+degov-rpc = { path = "../degov-rpc" }
+chrono = "0.4"
+
+[build-dependencies]
+degov-rpc-build = { path = "../degov-rpc-build" }

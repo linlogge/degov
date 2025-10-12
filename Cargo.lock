@@ -1389,28 +1389,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "degov-api"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-stream",
- "axum",
- "axum-extra",
- "chrono",
- "degov-rpc",
- "degov-rpc-build",
- "degov-server",
- "prost",
- "reqwest 0.12.23",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tokio",
- "tower-http",
- "uuid",
-]
-
-[[package]]
 name = "degov-cli"
 version = "0.1.0"
 dependencies = [
@@ -1418,7 +1396,6 @@ dependencies = [
  "clap",
  "clap-cargo",
  "colored",
- "degov-api",
  "degov-core",
  "degov-dgl",
  "degov-engine",
@@ -1605,13 +1582,22 @@ dependencies = [
 name = "degov-server"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "async-stream",
+ "axum",
+ "axum-extra",
+ "chrono",
  "degov-core",
  "degov-engine",
+ "degov-rpc",
+ "degov-rpc-build",
  "degov-storage",
  "foundationdb",
+ "prost",
  "serde_json",
  "thiserror 1.0.69",
  "tokio",
+ "tower-http",
  "tracing",
  "uuid",
 ]

@@ -20,7 +20,6 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 ARG API_URL
-ENV VITE_API_URL=${API_URL}
 
 # Build the application
 RUN pnpm build --filter=infra-admin
@@ -28,8 +27,8 @@ RUN pnpm build --filter=infra-admin
 # Production stage with nginx
 FROM nginx:alpine AS production
 
-# Copy custom nginx configuration
-COPY packaging/docker/infra-admin/nginx.conf /etc/nginx/conf.d/default.conf
+# Copy custom nginx configuration template
+COPY packaging/docker/infra-admin/nginx.conf /etc/nginx/templates/default.conf.template
 
 # Copy built application from build stage
 COPY --from=base /app/apps/infra-admin/dist /usr/share/nginx/html
@@ -37,5 +36,8 @@ COPY --from=base /app/apps/infra-admin/dist /usr/share/nginx/html
 # Expose port
 EXPOSE 80
 
-# Start nginx
+# Environment variable that will be substituted
+ENV API_URL=${API_URL:-http://localhost:3030/rpc}
+
+# Start nginx (nginx:alpine automatically processes /etc/nginx/templates/*.template with envsubst)
 CMD ["nginx", "-g", "daemon off;"]

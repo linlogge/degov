@@ -1,9 +1,9 @@
 use axum::{extract::State, Router};
-use degov_server::{WorkflowService, ServerError};
+use crate::{WorkflowService, ServerError};
 use degov_rpc::prelude::RpcRouterExt;
 use std::sync::Arc;
 
-use crate::Error;
+use super::Error;
 
 pub mod types {
     include!(concat!(env!("OUT_DIR"), "/engine.rs"));

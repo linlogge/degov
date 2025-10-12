@@ -12,7 +12,6 @@ members = [
     "crates/degov-storage",
     "crates/degov-network",
     "crates/degov-consent",
-    "crates/degov-api",
     "crates/degov-ui",
     "crates/degov-admin",
     "crates/degov-governance",
