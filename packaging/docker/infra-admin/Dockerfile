@@ -30,10 +30,6 @@ FROM nginx:alpine AS production
 # Copy custom nginx configuration template
 COPY packaging/docker/infra-admin/nginx.conf /etc/nginx/templates/default.conf.template
 
-# Copy custom entrypoint script
-COPY packaging/docker/infra-admin/docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
 # Copy built application from build stage
 COPY --from=base /app/apps/infra-admin/dist /usr/share/nginx/html
 
@@ -43,6 +39,5 @@ EXPOSE 80
 # Environment variable that will be substituted
 ENV API_URL=http://localhost:3030/api
 
-# Use custom entrypoint that parses API_URL
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+# Start nginx (nginx:alpine automatically processes /etc/nginx/templates/*.template with envsubst)
 CMD ["nginx", "-g", "daemon off;"]
