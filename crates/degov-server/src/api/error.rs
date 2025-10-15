@@ -2,7 +2,7 @@ use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
 };
-use degov_rpc::server::error::{RpcError, RpcErrorCode, RpcIntoError};
+use connectare::server::error::{RpcError, RpcErrorCode, RpcIntoError};
 
 // This is an example Error type, to demo impls needed for `degov-rpc`. It uses `thiserror` to
 // wrap various error types as syntactic sugar, but you could just as easily write this out by hand.
@@ -36,7 +36,7 @@ pub enum Error {
 /// Error codes are well-defined in connect-web (which mirrors gRPC), streaming errors don't effect
 /// HTTP status codes, and so on.
 impl RpcIntoError for Error {
-    fn rpc_into_error(self) -> degov_rpc::prelude::RpcError {
+    fn rpc_into_error(self) -> connectare::prelude::RpcError {
         println!("{:#?}", self);
 
         // Each response is a tuple of well-defined (per the Connect-Web) codes, along with a

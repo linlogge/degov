@@ -100,7 +100,7 @@ pub enum RpcError {
     Connection(String),
     
     #[error("Request error: {0}")]
-    Request(#[from] degov_rpc::error::RpcError),
+    Request(#[from] connectare::error::RpcError),
     
     #[error("Timeout")]
     Timeout,

@@ -1,8 +1,8 @@
-use degov_rpc_build::{degov_rpc_codegen, AxumConnectGenSettings};
+use connectare_build::{connectare_codegen, ConnectareGenSettings};
 
 fn main() {
-    let settings = AxumConnectGenSettings::from_directory_recursive("proto")
+    let settings = ConnectareGenSettings::from_directory_recursive("proto")
         .expect("failed to glob proto files");
 
-    degov_rpc_codegen(settings).unwrap();
+    connectare_codegen(settings).unwrap();
 }

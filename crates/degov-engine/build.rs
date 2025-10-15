@@ -1,7 +1,7 @@
-use degov_rpc_build::{AxumConnectGenSettings, degov_rpc_codegen};
+use connectare_build::{ConnectareGenSettings, connectare_codegen};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    degov_rpc_codegen(AxumConnectGenSettings::from_directory_recursive("proto")?)?;
+    connectare_codegen(ConnectareGenSettings::from_directory_recursive("proto")?)?;
 
     Ok(())
 }

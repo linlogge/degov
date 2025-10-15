@@ -5,7 +5,7 @@ use crate::error::Result;
 use crate::types::{RuntimeType, WorkerHealthStatus, WorkerInfo, WorkerId, WorkerStats};
 use axum::Router;
 use chrono::Utc;
-use degov_rpc::prelude::*;
+use connectare::prelude::*;
 use std::net::SocketAddr;
 use std::sync::Arc;
 

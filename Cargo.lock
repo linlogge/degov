@@ -921,6 +921,50 @@ dependencies = [
 ]
 
 [[package]]
+name = "connectare"
+version = "0.5.3"
+source = "git+https://github.com/linlogge/connectare#255149a4a5ed0c994d94bd19b91008e79870363a"
+dependencies = [
+ "async-trait",
+ "axum",
+ "base64 0.22.1",
+ "bytes",
+ "form_urlencoded",
+ "futures",
+ "futures-util",
+ "http 1.3.1",
+ "http-body 1.0.1",
+ "http-body-util",
+ "pbjson",
+ "pbjson-types",
+ "percent-encoding",
+ "prost",
+ "reqwest 0.12.23",
+ "serde",
+ "serde_json",
+ "serde_qs",
+ "thiserror 1.0.69",
+ "tracing",
+]
+
+[[package]]
+name = "connectare-build"
+version = "0.5.3"
+source = "git+https://github.com/linlogge/connectare#255149a4a5ed0c994d94bd19b91008e79870363a"
+dependencies = [
+ "anyhow",
+ "convert_case",
+ "pbjson-build",
+ "proc-macro2",
+ "prost",
+ "prost-build",
+ "prost-reflect",
+ "protoc-fetcher",
+ "quote",
+ "syn 2.0.106",
+]
+
+[[package]]
 name = "const-oid"
 version = "0.9.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1462,8 +1506,8 @@ dependencies = [
  "base64 0.22.1",
  "bytes",
  "chrono",
- "degov-rpc",
- "degov-rpc-build",
+ "connectare",
+ "connectare-build",
  "degov-storage",
  "foundationdb",
  "hostname",
@@ -1520,66 +1564,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "degov-rpc"
-version = "0.5.3"
-dependencies = [
- "async-trait",
- "axum",
- "axum-extra",
- "base64 0.22.1",
- "bytes",
- "form_urlencoded",
- "futures",
- "futures-util",
- "http 1.3.1",
- "http-body 1.0.1",
- "http-body-util",
- "pbjson",
- "pbjson-types",
- "percent-encoding",
- "prost",
- "reqwest 0.12.23",
- "serde",
- "serde_json",
- "serde_qs",
- "thiserror 1.0.69",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "degov-rpc-build"
-version = "0.5.3"
-dependencies = [
- "anyhow",
- "convert_case",
- "pbjson-build",
- "proc-macro2",
- "prost",
- "prost-build",
- "prost-reflect",
- "protoc-fetcher",
- "quote",
- "syn 2.0.106",
-]
-
-[[package]]
-name = "degov-rpc-examples"
-version = "0.0.1"
-dependencies = [
- "anyhow",
- "async-stream",
- "axum",
- "axum-extra",
- "degov-rpc",
- "degov-rpc-build",
- "prost",
- "thiserror 2.0.17",
- "tokio",
- "tower-http",
-]
-
-[[package]]
 name = "degov-server"
 version = "0.1.0"
 dependencies = [
@@ -1588,10 +1572,10 @@ dependencies = [
  "axum",
  "axum-extra",
  "chrono",
+ "connectare",
+ "connectare-build",
  "degov-core",
  "degov-engine",
- "degov-rpc",
- "degov-rpc-build",
  "degov-storage",
  "foundationdb",
  "prost",

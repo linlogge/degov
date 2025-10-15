@@ -7,7 +7,7 @@ pub use executor::TaskExecutor;
 use crate::error::{EngineError, Result};
 use crate::runtime::{JavaScriptRuntime, WasmRuntime};
 use crate::types::{RuntimeType, WorkerId, WorkerStats};
-use degov_rpc::client::{RpcClient, RpcClientConfig};
+use connectare::client::{RpcClient, RpcClientConfig};
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::broadcast;

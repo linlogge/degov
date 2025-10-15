@@ -20,9 +20,6 @@ members = [
     "crates/degov-dgl",
     "crates/degov-lsp",
     "crates/degov-engine",
-    "crates/degov-rpc",
-    "crates/degov-rpc-build",
-    "crates/degov-rpc-examples",
 ]
 
 [workspace.dependencies]

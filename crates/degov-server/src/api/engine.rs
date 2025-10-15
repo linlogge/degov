@@ -1,6 +1,6 @@
 use axum::{extract::State, Router};
 use crate::{WorkflowService, ServerError};
-use degov_rpc::prelude::RpcRouterExt;
+use connectare::prelude::RpcRouterExt;
 use std::sync::Arc;
 
 use super::Error;

@@ -1,5 +1,5 @@
 use axum::Router;
-use degov_rpc::prelude::RpcRouterExt;
+use connectare::prelude::RpcRouterExt;
 
 use super::{hello::types::{HelloRequest, HelloResponse, HelloWorldService}, Error};
 
