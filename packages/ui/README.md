@@ -1,4 +1,4 @@
-# @degov/ui
+# @dgv/ui
 
 Shared UI component library built with React, Tailwind CSS, and shadcn/ui.
 
@@ -9,7 +9,7 @@ Shared UI component library built with React, Tailwind CSS, and shadcn/ui.
 A versatile button component with multiple variants and sizes.
 
 ```tsx
-import { Button } from '@degov/ui/button'
+import { Button } from '@dgv/ui/button'
 
 function MyComponent() {
   return (
@@ -40,19 +40,19 @@ function MyComponent() {
 ```json
 {
   "dependencies": {
-    "@degov/ui": "workspace:*"
+    "@dgv/ui": "workspace:*"
   }
 }
 ```
 
 2. Import the component:
 ```tsx
-import { Button } from '@degov/ui/button'
+import { Button } from '@dgv/ui/button'
 ```
 
 3. Import the styles in your main entry file:
 ```tsx
-import '@degov/ui/styles.css'
+import '@dgv/ui/styles.css'
 ```
 
 ## Development

@@ -5,25 +5,25 @@ import { Slot } from "@radix-ui/react-slot"
 import { cva, VariantProps } from "class-variance-authority"
 import { PanelLeftIcon } from "lucide-react"
 
-import { useIsMobile } from "@degov/ui/hooks/use-mobile"
-import { cn } from "@degov/ui/lib/utils"
-import { Button } from "@degov/ui/components/button"
-import { Input } from "@degov/ui/components/input"
-import { Separator } from "@degov/ui/components/separator"
+import { useIsMobile } from "@dgv/ui/hooks/use-mobile"
+import { cn } from "@dgv/ui/lib/utils"
+import { Button } from "@dgv/ui/components/button"
+import { Input } from "@dgv/ui/components/input"
+import { Separator } from "@dgv/ui/components/separator"
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@degov/ui/components/sheet"
-import { Skeleton } from "@degov/ui/components/skeleton"
+} from "@dgv/ui/components/sheet"
+import { Skeleton } from "@dgv/ui/components/skeleton"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@degov/ui/components/tooltip"
+} from "@dgv/ui/components/tooltip"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7

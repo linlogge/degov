@@ -5,9 +5,9 @@ import { useRouter, Stack } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useThemeColor } from "@/hooks/use-theme-color";
-import { Logo } from "@degov/ui-mobile/logo";
+import { Logo } from "@dgv/ui-mobile/logo";
 import { walletItems } from "./wallet-items";
-import { add } from "@degov/identity-sdk";
+import { add } from "@dgv/identity-sdk";
 
 export default function HomeScreen() {
   const router = useRouter();

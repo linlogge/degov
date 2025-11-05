@@ -11,10 +11,10 @@
     },
     "iconLibrary": "lucide",
     "aliases": {
-        "components": "@degov/ui/components",
-        "utils": "@degov/ui/lib/utils",
-        "hooks": "@degov/ui/hooks",
-        "lib": "@degov/ui/lib",
-        "ui": "@degov/ui/components"
+        "components": "@dgv/ui/components",
+        "utils": "@dgv/ui/lib/utils",
+        "hooks": "@dgv/ui/hooks",
+        "lib": "@dgv/ui/lib",
+        "ui": "@dgv/ui/components"
     }
 }
