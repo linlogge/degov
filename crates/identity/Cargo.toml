@@ -1,0 +1,9 @@
+[package]
+name = "dgv-identity"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+oid4vci = { git = "https://github.com/impierce/openid4vc", rev = "4cbf854" }
+oid4vp = { git = "https://github.com/impierce/openid4vc", rev = "4cbf854" }
+siopv2 = { git = "https://github.com/impierce/openid4vc", rev = "4cbf854" }

@@ -1,0 +1,8 @@
+[package]
+name = "dgv-wasm-api-wasi"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+wasi-common = { workspace = true }
+wiggle = { workspace = true }

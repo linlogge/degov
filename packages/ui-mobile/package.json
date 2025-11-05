@@ -1,0 +1,27 @@
+{
+    "name": "@dgv/ui-mobile",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        "./logo": "./src/components/logo.tsx"
+    },
+    "scripts": {
+        "dev": "tsc --watch",
+        "build": "tsc",
+        "lint": "eslint src/"
+    },
+    "dependencies": {
+        "react": "^19.1.0",
+        "react-native": "^0.81.5",
+        "react-native-svg": "^15.12.1"
+    },
+    "devDependencies": {
+        "@types/react": "^19.0.8",
+        "typescript": "^5.7.2"
+    },
+    "peerDependencies": {
+        "react": "^19.1.0",
+        "react-dom": "^19.1.0"
+    }
+}

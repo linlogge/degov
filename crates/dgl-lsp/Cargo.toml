@@ -1,0 +1,19 @@
+[package]
+name = "dgv-dgl-lsp"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "dgv-lsp"
+path = "src/main.rs"
+
+[dependencies]
+dgv-dgl = { path = "../dgl" }
+tower-lsp = "0.20"
+tokio = { version = "1.0", features = ["full"] }
+tracing = "0.1"
+miette = { version = "7.6.0", features = ["fancy"] }
+tracing-subscriber = "0.3"
+dashmap = "6.0"
+ropey = "1.6"
+kdl = "6.5.0"

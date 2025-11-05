@@ -1,0 +1,3 @@
+rust:
+  directory: ../../crates/identity-ffi
+  manifestPath: Cargo.toml

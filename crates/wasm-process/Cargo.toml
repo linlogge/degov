@@ -1,0 +1,18 @@
+[package]
+name = "dgv-wasm-process"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+async-trait = { workspace = true }
+anyhow = { workspace = true }
+tokio = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+wasmtime = { workspace = true, features = ["component-model", "wave", "component-model-async"] }
+wasmtime-wasi = { workspace = true }
+dgv-core = { path = "../core" }
+dashmap = "6.1.0"
+smallvec = "1.15.1"

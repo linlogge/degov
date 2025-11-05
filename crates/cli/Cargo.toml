@@ -1,0 +1,22 @@
+[package]
+name = "dgv-cli"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+clap = { version = "4.5.32", features = ["derive"] }
+dgv-workflow = { path = "../workflow" }
+dgv-dgl = { path = "../dgl" }
+dgv-core = { path = "../core" }
+dgv-storage = { path = "../storage" }
+dgv-wasm-process = { path = "../wasm-process" }
+anyhow = { workspace = true }
+clap-cargo = "0.15.2"
+tokio = { workspace = true }
+colored = "2.1"
+miette = { version = "7.6.0", features = ["fancy"] }
+axum = "0.8"
+tower-http = { version = "0.6.6", features = ["cors", "fs"] }
+tracing = { version = "0.1", features = ["log"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+dotenv = "0.15.0"

@@ -1,7 +1,0 @@
-[package]
-name = "degov-ui"
-version.workspace = true
-edition.workspace = true
-
-[dependencies]
-tokio = { workspace = true }

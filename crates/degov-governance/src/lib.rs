@@ -1,1 +1,0 @@
-// Federated governance & trust model

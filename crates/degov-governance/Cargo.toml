@@ -1,7 +1,0 @@
-[package]
-name = "degov-governance"
-version.workspace = true
-edition.workspace = true
-
-[dependencies]
-tokio = { workspace = true }

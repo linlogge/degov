@@ -1,10 +1,6 @@
 {
   "name": "degov",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
   "packageManager": "pnpm@10.18.0",
   "scripts": {
     "codegen": "buf generate",

@@ -1,7 +1,0 @@
-[package]
-name = "degov-identity"
-version.workspace = true
-edition.workspace = true
-
-[dependencies]
-tokio = { workspace = true }
