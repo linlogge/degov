@@ -1,0 +1,22 @@
+{{- if .Values.podDisruptionBudget.enabled }}
+{{- range $component := list "chancelor" "kube-operator" "frontdoor" }}
+{{- $values := index $.Values $component }}
+{{- if $values.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "degov.fullname" $ }}-{{ $component }}
+  labels:
+    {{- include "degov.componentLabels" (dict "component" $component "Values" $.Values "Chart" $.Chart "Release" $.Release) | nindent 4 }}
+spec:
+  {{- if $.Values.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ $.Values.podDisruptionBudget.minAvailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "degov.componentSelectorLabels" (dict "component" $component "Values" $.Values "Chart" $.Chart "Release" $.Release) | nindent 6 }}
+---
+{{- end }}
+{{- end }}
+{{- end }}
+

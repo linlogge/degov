@@ -1,6 +1,7 @@
 import { Image } from "expo-image";
 import {
   AppRegistry,
+  Button,
   Platform,
   ScrollView,
   StyleSheet,

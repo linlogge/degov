@@ -9,10 +9,11 @@ import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { Stack } from "expo-router";
+import { Stack, useNavigation, usePathname } from "expo-router";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const path = usePathname();
 
   return (
     <Tabs>
@@ -26,6 +27,15 @@ export default function TabLayout() {
         <Icon sf="wallet.bifold.fill" />
       </Tabs.Trigger>
       <Tabs.Trigger
+        name="services"
+        options={{
+          title: "Services",
+        }}
+      >
+        <Label>Services</Label>
+        <Icon sf="building.columns.fill" />
+      </Tabs.Trigger>
+      <Tabs.Trigger
         name="settings"
         options={{
           title: "Settings",
@@ -35,14 +45,14 @@ export default function TabLayout() {
         <Icon sf="gearshape.fill" />
       </Tabs.Trigger>
       <Tabs.Trigger
-        name="scan"
+        name="search"
         options={{
-          title: "Scan",
+          title: "Search",
         }}
         role="search"
       >
-        <Label>Scan</Label>
-        <Icon sf="qrcode.viewfinder" />
+        <Label>Search</Label>
+        <Icon sf="magnifyingglass" />
       </Tabs.Trigger>
     </Tabs>
   );

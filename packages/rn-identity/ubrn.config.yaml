@@ -1,0 +1,5 @@
+rust:
+  directory: ../../crates/identity-ffi
+  manifestPath: Cargo.toml
+web:
+  wasmCrateName: dgv-react-native-identity

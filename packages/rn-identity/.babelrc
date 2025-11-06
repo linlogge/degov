@@ -1,0 +1,6 @@
+{
+    "presets": ["react-native-builder-bob/babel-preset"],
+    "exclude": [
+        "src/generated/wasm-bindgen/index_bg.wasm.d.ts"
+    ]
+}

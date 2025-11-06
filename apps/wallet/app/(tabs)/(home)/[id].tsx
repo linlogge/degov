@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useThemeColor } from "@/hooks/use-theme-color";
-import { getWalletItemById } from "./wallet-items";
+import { getWalletItemById } from "../../../constants/wallet-items";
 
 export default function WalletItemDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();

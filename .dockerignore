@@ -6,9 +6,16 @@ target/
 node_modules/
 **/node_modules/
 tools/
+apps/
+packages/
 
-# Keep crates directory for Rust builds
-!crates/
+# Build artifacts
+dist/
+**/dist/
+**/ios/build/
+**/ios/Pods/
+*.vsix
+*.tgz
 
 # FoundationDB data
 fdb-data/
@@ -31,4 +38,7 @@ services/
 # Temporary files
 *.log
 tmp/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
 

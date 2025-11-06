@@ -1,0 +1,5 @@
+package example:host;
+
+world host {
+  export add: func(x: u32, y: u32) -> u32;
+}

@@ -1,0 +1,45 @@
+id "app.degov/portal"
+
+definition {
+    kind "Service"
+
+    service {
+        name "Portal"
+        reference "portal-rpc"
+    }
+}
+
+definition "portal-rpc" {
+    kind "RemoteProcedureService"
+
+    services {
+        service "list-services" {
+            response {
+            }
+
+            handler {
+                runtime "agora"
+                build {
+                    rust {
+                        path "./app"
+                    }
+                }
+            }
+        }
+    }
+}
+
+definition "portal-application" {
+    kind "AgoraApplication"
+}
+
+definition "service-list" {
+    kind: "DataModel"
+
+    model {
+        string "id" {
+            name "Id"
+            description ""
+        }
+    }
+}

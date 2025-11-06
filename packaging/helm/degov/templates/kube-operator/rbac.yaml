@@ -1,0 +1,37 @@
+{{- if and .Values.kubeOperator.enabled .Values.kubeOperator.rbac.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "degov.fullname" . }}-kube-operator
+  labels:
+    {{- include "degov.componentLabels" (dict "component" "kube-operator" "Values" .Values "Chart" .Chart "Release" .Release) | nindent 4 }}
+rules:
+- apiGroups: [""]
+  resources: ["*"]
+  verbs: ["*"]
+- apiGroups: ["apps"]
+  resources: ["*"]
+  verbs: ["*"]
+- apiGroups: ["apiextensions.k8s.io"]
+  resources: ["customresourcedefinitions"]
+  verbs: ["*"]
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "degov.fullname" . }}-kube-operator
+  labels:
+    {{- include "degov.componentLabels" (dict "component" "kube-operator" "Values" .Values "Chart" .Chart "Release" .Release) | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "degov.fullname" . }}-kube-operator
+subjects:
+- kind: ServiceAccount
+  name: {{ include "degov.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+{{- end }}
+

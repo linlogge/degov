@@ -1,3 +1,6 @@
 packages:
   - packages/*
   - apps/*
+
+patchedDependencies:
+  expo-router: patches/expo-router.patch

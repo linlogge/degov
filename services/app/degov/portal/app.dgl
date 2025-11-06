@@ -1,0 +1,13 @@
+id "app.degov/portal-agora"
+
+definition {
+    kind "AgoraApplication"
+
+    application {
+        name "Portal"
+
+        component "hello-world" {
+            
+        }
+    }
+}

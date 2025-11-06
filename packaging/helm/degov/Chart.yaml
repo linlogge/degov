@@ -1,0 +1,12 @@
+apiVersion: v2
+name: degov
+description: A Helm chart for degov platform including chancelor, kube-operator, and frontdoor
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - degov
+  - governance
+maintainers:
+  - name: degov team
+

@@ -1,0 +1,29 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+build:
+  artifacts:
+    - image: degov/chancelor
+      context: .
+      docker:
+        dockerfile: packaging/docker/chancelor/Dockerfile.dev
+    - image: degov/kube-operator
+      context: .
+      docker:
+        dockerfile: packaging/docker/kube-operator/Dockerfile.dev
+    - image: degov/frontdoor
+      context: .
+      docker:
+        dockerfile: packaging/docker/frontdoor/Dockerfile.dev
+  local:
+    push: false
+    concurrency: 0
+deploy:
+  helm:
+    releases:
+      - name: degov
+        chartPath: packaging/helm/degov
+        setValues:
+          image.repository: degov
+          image.tag: skaffold
+          frontdoor.ingress.enabled: true
+        skipBuildDependencies: true

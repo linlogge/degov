@@ -1,0 +1,53 @@
+{{- if .Values.chancelor.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "degov.fullname" . }}-chancelor
+  labels:
+    {{- include "degov.componentLabels" (dict "component" "chancelor" "Values" .Values "Chart" .Chart "Release" .Release) | nindent 4 }}
+spec:
+  replicas: {{ .Values.chancelor.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "degov.componentSelectorLabels" (dict "component" "chancelor" "Values" .Values "Chart" .Chart "Release" .Release) | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.chancelor.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "degov.componentSelectorLabels" (dict "component" "chancelor" "Values" .Values "Chart" .Chart "Release" .Release) | nindent 8 }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.chancelor.podSecurityContext | nindent 8 }}
+      containers:
+      - name: chancelor
+        securityContext:
+          {{- toYaml .Values.chancelor.securityContext | nindent 12 }}
+        image: "{{ include "degov.imageRegistry" . }}{{ .Values.chancelor.image.repository }}:{{ .Values.chancelor.image.tag }}"
+        imagePullPolicy: {{ .Values.chancelor.image.pullPolicy }}
+        {{- if .Values.chancelor.env }}
+        env:
+          {{- toYaml .Values.chancelor.env | nindent 10 }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.chancelor.resources | nindent 10 }}
+      {{- with .Values.chancelor.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.chancelor.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.chancelor.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
+

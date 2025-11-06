@@ -1,13 +1,31 @@
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Button,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useRouter, Stack } from "expo-router";
+import { Link, Stack, useRouter } from "expo-router";
+import {
+  Button as ButtonPrimitive,
+  CircularProgress,
+  Host,
+  Image,
+  Label,
+  Text,
+  VStack,
+} from '@expo/ui/swift-ui';
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useThemeColor } from "@/hooks/use-theme-color";
-import { Logo } from "@dgv/ui-mobile/logo";
-import { walletItems } from "./wallet-items";
-import { add } from "@dgv/identity-sdk";
+import { Logo } from "../../../../../packages/rn-ui/src/components/logo";
+import { walletItems } from "../../../constants/wallet-items";
+import { add } from "@dgv/react-native-identity";
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { HeaderButton } from "@react-navigation/elements";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -23,18 +41,31 @@ export default function HomeScreen() {
       <Stack.Screen
         options={{
           title: "Wallet",
-          headerShown: false,
+          headerLargeTitle: true,
+          headerBlurEffect: "none",
+          headerTransparent: true,
+          unstable_headerRightItems: () => {
+            return [
+              {
+                type: "button",
+                icon: {
+                  type: "sfSymbol",
+                  name: "barcode.viewfinder"
+                },
+                label: "Add",
+                onPress: () => {
+                  router.navigate("/scan")
+                }
+              }
+            ]
+          }
         }}
       />
       <ScrollView
         style={[styles.container, { backgroundColor }]}
         contentContainerStyle={styles.contentContainer}
       >
-        <Logo width={100} height={50}/>
         <ThemedView style={styles.header}>
-          <ThemedText type="title" style={styles.headerTitle}>
-            Wallet
-          </ThemedText>
           <ThemedText type="subtitle" style={styles.headerSubtitle}>
             {add(1, 88)} items
           </ThemedText>

@@ -1,0 +1,54 @@
+{{- if .Values.kubeOperator.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "degov.fullname" . }}-kube-operator
+  labels:
+    {{- include "degov.componentLabels" (dict "component" "kube-operator" "Values" .Values "Chart" .Chart "Release" .Release) | nindent 4 }}
+spec:
+  replicas: {{ .Values.kubeOperator.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "degov.componentSelectorLabels" (dict "component" "kube-operator" "Values" .Values "Chart" .Chart "Release" .Release) | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.kubeOperator.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "degov.componentSelectorLabels" (dict "component" "kube-operator" "Values" .Values "Chart" .Chart "Release" .Release) | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "degov.serviceAccountName" . }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.kubeOperator.podSecurityContext | nindent 8 }}
+      containers:
+      - name: kube-operator
+        securityContext:
+          {{- toYaml .Values.kubeOperator.securityContext | nindent 12 }}
+        image: "{{ include "degov.imageRegistry" . }}{{ .Values.kubeOperator.image.repository }}:{{ .Values.kubeOperator.image.tag }}"
+        imagePullPolicy: {{ .Values.kubeOperator.image.pullPolicy }}
+        {{- if .Values.kubeOperator.env }}
+        env:
+          {{- toYaml .Values.kubeOperator.env | nindent 10 }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.kubeOperator.resources | nindent 10 }}
+      {{- with .Values.kubeOperator.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.kubeOperator.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.kubeOperator.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
+

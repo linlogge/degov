@@ -1,0 +1,79 @@
+# Planner stage - analyzes dependencies
+FROM rust:1.91-slim AS planner
+
+WORKDIR /build
+
+# Install cargo-chef
+RUN cargo install cargo-chef
+
+# Copy workspace files needed for planning
+COPY Cargo.toml Cargo.lock ./
+COPY proto/ ./proto/
+COPY crates/ ./crates/
+COPY bin/ ./bin/
+
+# Generate recipe
+RUN cargo chef prepare --recipe-path recipe.json --bin chancelor
+
+# Cacher stage - builds dependencies
+FROM rust:1.91-slim AS cacher
+
+WORKDIR /build
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    protobuf-compiler \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install cargo-chef
+RUN cargo install cargo-chef
+
+# Copy recipe from planner
+COPY --from=planner /build/recipe.json recipe.json
+
+# Build dependencies only
+RUN cargo chef cook --release --recipe-path recipe.json --bin chancelor
+
+# Builder stage - builds the application
+FROM rust:1.91-slim AS builder
+
+WORKDIR /build
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    protobuf-compiler \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy workspace files
+COPY Cargo.toml Cargo.lock ./
+COPY proto/ ./proto/
+COPY crates/ ./crates/
+COPY bin/ ./bin/
+
+# Copy dependency artifacts from cacher
+COPY --from=cacher /build/target target
+
+# Build the binary
+RUN cargo build --release --bin chancelor
+
+# Runtime stage
+FROM debian:bookworm-slim
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the binary from builder
+COPY --from=builder /build/target/release/chancelor /app/chancelor
+
+# Set the binary AS the entrypoint
+ENTRYPOINT ["/app/chancelor"]
+

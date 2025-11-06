@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package degov.chancelor;
+
+service Frontdoor {
+    rpc GetServices(GetServicesRequest) returns (GetServicesResponse);
+}
+
+message GetServicesRequest {
+}
+
+message GetServicesResponse {
+    repeated Service services = 1;
+}
+
+message Service {
+    string id = 1;
+    string name = 2;
+}

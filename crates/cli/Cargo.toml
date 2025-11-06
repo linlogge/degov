@@ -9,7 +9,8 @@ dgv-workflow = { path = "../workflow" }
 dgv-dgl = { path = "../dgl" }
 dgv-core = { path = "../core" }
 dgv-storage = { path = "../storage" }
-dgv-wasm-process = { path = "../wasm-process" }
+dgv-agora-process = { path = "../agora-process" }
+dgv-agora-build = { path = "../agora-build" }
 anyhow = { workspace = true }
 clap-cargo = "0.15.2"
 tokio = { workspace = true }

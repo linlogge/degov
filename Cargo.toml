@@ -6,22 +6,29 @@ edition = "2024"
 [workspace]
 resolver = "2"
 members = [
+    "bin/chancelor",
+    "bin/frontdoor",
+    "bin/kube-operator",
+    "crates/chancelor",
     "crates/core",
     "crates/crypto",
     "crates/storage",
     "crates/identity",
+    "crates/frontdoor",
     "crates/cli",
     "crates/dgl",
     "crates/dgl-lsp",
     "crates/workflow",
-    "crates/wasm-process",
-    "crates/wasm-api-stdout-capture",
-    "crates/wasm-api-wasi",
-    "services/app/degov/hello-world",
+    "crates/agora-process",
+    "crates/agora-api-stdout-capture",
+    "crates/agora-api-wasi",
+    "crates/agora-build",
+    "crates/kube-operator"
 ]
 
 [workspace.dependencies]
 tracing = "0.1.41"
+futures = "0.3.31"
 async-trait = "0.1.89"
 tokio = { version = "1.44.1", features = ["full"] }
 serde = { version = "1.0.219", features = ["derive"] }
