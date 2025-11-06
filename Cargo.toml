@@ -19,10 +19,10 @@ members = [
     "crates/dgl",
     "crates/dgl-lsp",
     "crates/workflow",
-    "crates/agora-process",
-    "crates/agora-api-stdout-capture",
-    "crates/agora-api-wasi",
-    "crates/agora-build",
+    "crates/agora/process",
+    "crates/agora/api-stdout-capture",
+    "crates/agora/api-wasi",
+    "crates/agora/build",
     "crates/kube-operator"
 ]
 

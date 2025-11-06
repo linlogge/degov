@@ -10,4 +10,4 @@ serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 tracing = { workspace = true }
 anyhow = { workspace = true }
-dgv-core = { path = "../core" }
+dgv-core = { path = "../../core" }
