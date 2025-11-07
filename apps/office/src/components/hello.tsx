@@ -1,5 +1,5 @@
-import { HelloWorldService } from "@degov/sdk/pb/hello_pb";
-import { useQuery } from "@degov/sdk/query";
+import { HelloWorldService } from "@dgv/sdk/pb/hello_pb";
+import { useQuery } from "@dgv/sdk/query";
 import { useState } from "react";
 
 export const Hello = () => {

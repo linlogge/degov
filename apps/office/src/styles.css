@@ -1,4 +1,4 @@
 @import "tailwindcss";
 
-@import '@degov/ui/styles.css';
-@source "../node_modules/@degov/ui/src";
+@import '@dgv/ui/styles.css';
+@source "../node_modules/@dgv/ui/src";

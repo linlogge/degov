@@ -3,8 +3,8 @@ import { SiteHeader } from '@/components/site-header';
 import { createFileRoute } from '@tanstack/react-router'
 
 import data from './data.json';
-import { useQuery } from '@degov/sdk/query';
-import { EngineService } from '@degov/sdk/pb/engine_pb';
+import { useQuery } from '@dgv/sdk/query';
+import { EngineService } from '@dgv/sdk/pb/engine_pb';
 
 export const Route = createFileRoute('/workflows/')({
   component: RouteComponent,

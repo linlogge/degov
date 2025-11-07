@@ -1,4 +1,4 @@
-import { Button } from "@degov/ui/button";
+import { Button } from "@dgv/ui/button";
 
 export default function Home() {
   return (

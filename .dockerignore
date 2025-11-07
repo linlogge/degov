@@ -1,25 +1,34 @@
-# Target directories
-target/
-**/target/
-
 # Node modules and frontend
 node_modules/
 **/node_modules/
 tools/
-apps/
-packages/
+
+.turbo/
+**/.turbo/
+.expo/
+**/.expo/
+.tanstack/
+**/.tanstack/
+.next/
+**/.next/
 
 # Build artifacts
+target/
+**/target/
 dist/
 **/dist/
-**/ios/build/
-**/ios/Pods/
+build/
+**/build/
+Pods/
+**/Pods/
 *.vsix
+**/*.vsix
 *.tgz
+**/*.tgz
+*.xcframework/
+**/*.xcframework/
 
-# FoundationDB data
-fdb-data/
-fdb-config/
+!crates/agora/build/
 
 # Services
 services/
@@ -29,16 +38,21 @@ services/
 .git/
 .gitignore
 
+# Deployment
+tools/
+
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 
+apps/**/ios/
+apps/**/android/
+
+packages/**/ios/
+packages/**/android/
+
 # Temporary files
 *.log
 tmp/
-pnpm-lock.yaml
-package-lock.json
-yarn.lock
-

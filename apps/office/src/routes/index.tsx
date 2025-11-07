@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Button } from "@degov/ui/button";
+import { Button } from "@dgv/ui/button";
 import { SiteHeader } from "@/components/site-header";
 import { Hello } from "@/components/hello";
 
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/")({
 
 function App() {
   const handleClick = () => {
-    alert("Button from @degov/ui package clicked!");
+    alert("Button from @dgv/ui package clicked!");
   };
 
   return (

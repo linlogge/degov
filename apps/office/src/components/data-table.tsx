@@ -33,7 +33,7 @@ import {
   IconLoader,
   IconPlus,
   IconTrendingUp,
-} from "@degov/ui/icons"
+} from "@dgv/ui/icons"
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -52,10 +52,10 @@ import {
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { useIsMobile } from "@degov/ui/hooks/use-mobile"
-import { Badge } from "@degov/ui/badge"
-import { Button } from "@degov/ui/button"
-import { Checkbox } from "@degov/ui/checkbox"
+import { useIsMobile } from "@dgv/ui/hooks/use-mobile"
+import { Badge } from "@dgv/ui/badge"
+import { Button } from "@dgv/ui/button"
+import { Checkbox } from "@dgv/ui/checkbox"
 import {
   Drawer,
   DrawerClose,
@@ -65,7 +65,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@degov/ui/drawer"
+} from "@dgv/ui/drawer"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -73,17 +73,17 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@degov/ui/dropdown-menu"
-import { Input } from "@degov/ui/input"
-import { Label } from "@degov/ui/label"
+} from "@dgv/ui/dropdown-menu"
+import { Input } from "@dgv/ui/input"
+import { Label } from "@dgv/ui/label"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@degov/ui/select"
-import { Separator } from "@degov/ui/separator"
+} from "@dgv/ui/select"
+import { Separator } from "@dgv/ui/separator"
 import {
   Table,
   TableBody,
@@ -91,13 +91,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@degov/ui/table"
+} from "@dgv/ui/table"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@degov/ui/tabs"
+} from "@dgv/ui/tabs"
 
 export const schema = z.object({
   id: z.number(),

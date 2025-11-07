@@ -7,8 +7,8 @@ import { routeTree } from "./routeTree.gen";
 
 import "./styles.css";
 import reportWebVitals from "./reportWebVitals.ts";
-import { createConnectTransport } from "@degov/sdk";
-import { QueryClient, QueryClientProvider, TransportProvider } from "@degov/sdk/query";
+import { createConnectTransport } from "@dgv/sdk";
+import { QueryClient, QueryClientProvider, TransportProvider } from "@dgv/sdk/query";
 
 // Create a new router instance
 const router = createRouter({

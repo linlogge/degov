@@ -1,15 +1,15 @@
 "use client"
 
-import { IconCirclePlusFilled, IconMail, type Icon } from "@degov/ui/icons"
+import { IconCirclePlusFilled, IconMail, type Icon } from "@dgv/ui/icons"
 
-import { Button } from "@degov/ui/button"
+import { Button } from "@dgv/ui/button"
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@degov/ui/sidebar"
+} from "@dgv/ui/sidebar"
 
 export function NavMain({
   items,

@@ -1,6 +1,6 @@
-import { Button } from "@degov/ui/button"
-import { Separator } from "@degov/ui/separator"
-import { SidebarTrigger } from "@degov/ui/sidebar"
+import { Button } from "@dgv/ui/button"
+import { Separator } from "@dgv/ui/separator"
+import { SidebarTrigger } from "@dgv/ui/sidebar"
 
 export function SiteHeader() {
   return (

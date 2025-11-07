@@ -6,13 +6,13 @@ import {
   IconLogout,
   IconNotification,
   IconUserCircle,
-} from "@degov/ui/icons"
+} from "@dgv/ui/icons"
 
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@degov/ui/avatar"
+} from "@dgv/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,13 +21,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@degov/ui/dropdown-menu"
+} from "@dgv/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@degov/ui/sidebar"
+} from "@dgv/ui/sidebar"
 
 export function NavUser({
   user,

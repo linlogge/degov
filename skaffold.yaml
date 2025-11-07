@@ -14,6 +14,10 @@ build:
       context: .
       docker:
         dockerfile: deployment/docker/frontdoor/Dockerfile.dev
+    - image: degov/office
+      context: .
+      docker:
+        dockerfile: deployment/docker/office/Dockerfile.dev
   local:
     push: false
     concurrency: 0
@@ -26,4 +30,15 @@ deploy:
           image.repository: degov
           image.tag: skaffold
           frontdoor.ingress.enabled: true
+          frontdoor.ingress.hosts:
+            - host: frontdoor.localhost
+              paths:
+                - path: /
+                  pathType: Prefix
+          office.ingress.enabled: true
+          office.ingress.hosts:
+            - host: office.localhost
+              paths:
+                - path: /
+                  pathType: Prefix
         skipBuildDependencies: true

@@ -17,7 +17,7 @@ import {
   IconSearch,
   IconSettings,
   IconUsers,
-} from "@degov/ui/icons"
+} from "@dgv/ui/icons"
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
@@ -29,7 +29,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@degov/ui/sidebar"
+} from "@dgv/ui/sidebar"
 
 const data = {
   user: {
