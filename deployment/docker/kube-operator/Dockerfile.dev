@@ -1,0 +1,46 @@
+FROM rust:1.91-slim AS cacher
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    protobuf-compiler \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN cargo install cargo-chef sccache --locked
+
+
+FROM cacher AS planner
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json --bin kube-operator
+
+
+FROM cacher AS builder
+COPY --from=planner /app/recipe.json recipe.json
+
+ENV RUSTC_WRAPPER=sccache \
+    SCCACHE_DIR=/sccache
+
+RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
+    --mount=type=cache,target=/usr/local/cargo/git,sharing=locked \
+    --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
+    cargo chef cook --release --recipe-path recipe.json --bin kube-operator
+
+COPY . .
+
+RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
+    --mount=type=cache,target=/usr/local/cargo/git,sharing=locked \
+    --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
+    cargo build --release --bin kube-operator
+
+FROM debian:bookworm-slim AS runtime
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /app/target/release/kube-operator /usr/local/bin/kube-operator
+
+ENTRYPOINT ["/usr/local/bin/kube-operator"]
