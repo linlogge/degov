@@ -1,4 +1,4 @@
-# DeGov - Production grade and dezentralized government administration
+# DeGov - Dezentralized government administration
 
 ## Getting Started
 
