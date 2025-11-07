@@ -9,7 +9,5 @@ async fn main() -> anyhow::Result<()> {
     let kube_operator = KubeOperator::new();
     kube_operator.run().await?;
 
-    pending::<()>().await;
-
     Ok(())
 }
