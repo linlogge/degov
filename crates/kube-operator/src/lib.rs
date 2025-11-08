@@ -13,7 +13,7 @@ impl KubeOperator {
     pub async fn run(self) -> anyhow::Result<()> {
         let client = Client::try_default().await?;
 
-        let config: ConfigMap = serde_json::from_value(serde_json::json!({
+        /* let config: ConfigMap = serde_json::from_value(serde_json::json!({
             "apiVersion": "v1",
             "kind": "ConfigMap",
             "metadata": {
@@ -33,7 +33,7 @@ impl KubeOperator {
 
         let config_api: Api<ConfigMap> = Api::default_namespaced(client);
 
-        config_api.create(&PostParams::default(), &config).await?;
+        config_api.create(&PostParams::default(), &config).await?; */
 
         pending::<()>().await;
 
