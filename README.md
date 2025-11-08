@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-As this platform is heavily based on microservices, it is recommended to use Skaffold to build and deploy the services to a Kubernetes cluster. It makes use of caching where possible to speed up the build process to allow quick local development iteration.
+As this platform is heavily based on microservices, it is recommended to use Skaffold to build and deploy the services to a local Kubernetes cluster. It makes use of caching where possible to speed up the build process to allow quick local development iteration. Rebuilds usually take only a few seconds and redeploys are instant.
 
 ### Prerequisites
 
