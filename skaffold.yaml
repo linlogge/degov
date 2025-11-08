@@ -26,6 +26,7 @@ deploy:
     releases:
       - name: degov
         chartPath: deployment/helm/degov
+        namespace: degov
         setValues:
           image.repository: degov
           image.tag: skaffold
