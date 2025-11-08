@@ -1,14 +1,16 @@
-FROM rust:1.91-slim-bookworm AS cacher
+FROM rustlang/rust:nightly-bookworm-slim AS cacher
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
     pkg-config \
     libssl-dev \
+    mold \
+    clang \
     protobuf-compiler \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cargo install cargo-chef sccache --locked
-
+RUN rustup component add rustc-codegen-cranelift-preview --toolchain nightly
 
 FROM cacher AS planner
 COPY . .
@@ -19,19 +21,24 @@ FROM cacher AS builder
 COPY --from=planner /app/recipe.json recipe.json
 
 ENV RUSTC_WRAPPER=sccache \
-    SCCACHE_DIR=/sccache
+    SCCACHE_DIR=/sccache \
+    RUSTFLAGS="-C linker=clang -C link-arg=-fuse-ld=mold"
 
-RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
-    --mount=type=cache,target=/usr/local/cargo/git,sharing=locked \
-    --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
-    cargo chef cook --release --recipe-path recipe.json --bin kube-operator
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/usr/local/cargo/git \
+    --mount=type=cache,target=$SCCACHE_DIR \
+    cargo chef cook --recipe-path recipe.json --bin kube-operator
 
 COPY . .
 
-RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
-    --mount=type=cache,target=/usr/local/cargo/git,sharing=locked \
-    --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
-    cargo build --release --bin kube-operator
+RUN mkdir -p .cargo && \
+    printf "[unstable]\ncodegen-backend = true\n\n[profile.dev]\ncodegen-backend = \"cranelift\"\n" \
+        > .cargo/config.toml
+
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/usr/local/cargo/git \
+    --mount=type=cache,target=$SCCACHE_DIR \
+    cargo build --bin kube-operator
 
 FROM debian:bookworm-slim AS runtime
 WORKDIR /app
@@ -41,6 +48,6 @@ RUN apt-get update && apt-get install -y \
     libssl3 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/target/release/kube-operator /usr/local/bin/kube-operator
+COPY --from=builder /app/target/debug/kube-operator /usr/local/bin/kube-operator
 
 ENTRYPOINT ["/usr/local/bin/kube-operator"]

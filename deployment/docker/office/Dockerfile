@@ -2,36 +2,27 @@ FROM node:22-slim AS builder
 
 WORKDIR /app
 
-# Install pnpm
 RUN npm install -g pnpm@10.18.0
 
-# Copy package files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/office/package.json ./apps/office/
 COPY packages/ ./packages/
+COPY patches/ ./patches/
 
-# Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# Copy source code
 COPY apps/office/ ./apps/office/
 
-# Build the application
 WORKDIR /app/apps/office
 RUN pnpm build
 
-# Production stage with nginx
 FROM nginx:alpine
 
-# Copy built assets from builder
 COPY --from=builder /app/apps/office/dist /usr/share/nginx/html
 
-# Copy nginx configuration
 COPY deployment/docker/office/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80
 EXPOSE 80
 
-# Start nginx
 CMD ["nginx", "-g", "daemon off;"]
 
